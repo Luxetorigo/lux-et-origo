@@ -238,6 +238,7 @@
         function a(txt, href, cls) { var x = el("a", cls || "", txt); x.href = href; x.target = "_blank"; x.rel = "noopener"; act.appendChild(x); }
         if (it.drive) { a("Ver", driveVer(it.drive), "ver"); a("Descargar", driveDesc(it.drive)); }
         if (it.youtube) a("▶ Escuchar", it.youtube);
+        if (it.fuente) a("Fuente", it.fuente);
         if (!it.drive && !it.youtube) act.appendChild(el("span", "off", "Próximamente"));
         c.appendChild(act); lista.appendChild(c);
         setTimeout(function () { c.classList.add("in"); }, 30);
@@ -276,6 +277,11 @@
       det.appendChild(el("h1", "", it.titulo));
       det.appendChild(el("p", "who", [it.obra, it.compositor].filter(Boolean).join(" · ")));
       if (it.notas) det.appendChild(el("p", "nota", it.notas));
+      if (it.condicion) {
+        var cp = el("p", "cond"); cp.appendChild(el("strong", "", "Condición: ")); 
+        cp.appendChild(document.createTextNode(it.condicion + (it.autorizada_por ? " — autorizada por " + it.autorizada_por : "")));
+        det.appendChild(cp);
+      }
 
       var bots = el("div", "botones");
       function boton(txt, href, primario) {
@@ -286,6 +292,7 @@
       bots.appendChild(it.drive_reducida ? boton("⬇ Descargar partitura", driveDesc(it.drive_reducida), true) : boton("Partitura: próximamente"));
       if (it.drive_original) bots.appendChild(boton("⬇ Original (Drive)", driveVer(it.drive_original)));
       if (ytId(it.youtube) || it.youtube) bots.appendChild(boton("▶ Escuchar en YouTube", it.youtube));
+      if (it.fuente) bots.appendChild(boton("Fuente", it.fuente));
       det.appendChild(bots);
 
       /* Vista de la partitura */

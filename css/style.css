@@ -195,3 +195,8 @@ blockquote cite{display:block;font:normal .85rem var(--sans);color:var(--muted);
   animation:brillo 8s ease-in-out infinite alternate}
 .brand{font-family:"Cinzel",var(--serif);font-weight:700;letter-spacing:.12em}
 .top nav{gap:.9rem 1.1rem}
+
+/* Botón volver en su propia línea */
+.volver{display:block;width:fit-content;margin-bottom:1.6rem}
+.det .cond{margin:.4rem 0 0;font-size:.92rem;color:var(--muted)}
+.det .cond strong{color:var(--text)}

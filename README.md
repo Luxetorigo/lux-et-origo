@@ -38,6 +38,9 @@ Campos vacíos (`""`) = ese botón dice «próximamente» o no aparece. Los filt
 ```
 `categoria` debe ser exactamente `Cantorales`, `Libros` o `Documentos`. En salmos usa `"titulo"`, `"referencia"` (p. ej. «Salmo 22»), `"tiempo"` (tiempo litúrgico), `"autor"`, `"drive"` y `"youtube"`, y deja `"categoria": ""`.
 
+## Cargar todo desde un Excel
+En `herramientas/plantilla-lux-et-origo.xlsx` hay tres hojas (Partituras, Recursos, Salmos) con las columnas del sitio. Llénala y pásamela: yo la convierto y publico. También puedes hacerlo tú con `python3 herramientas/xlsx_a_json.py TuExcel.xlsx` (necesita `pip install openpyxl`), que reescribe los tres archivos de `data/`.
+
 ## Cambiar correo y redes
 Todo está en `js/config.js`. `emailPie` es el correo del pie de página de todo el sitio; `email` es el de la carta de transparencia.
 
