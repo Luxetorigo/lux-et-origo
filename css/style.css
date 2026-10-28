@@ -60,9 +60,6 @@ a{color:var(--acc2)} a:hover{color:var(--text)}
 .hero::after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% 35%,transparent 0,var(--bg) 72%)}
 @keyframes giro{to{rotate:360deg}}
 .eyebrow{letter-spacing:.28em;text-transform:uppercase;font-size:.78rem;color:var(--acc2);margin:0 0 1rem}
-.hero h1{font:400 clamp(3rem,10vw,6.2rem)/1.02 var(--serif);letter-spacing:.06em;margin:0 0 .8rem;
-  background:linear-gradient(100deg,var(--text) 20%,var(--acc2) 45%,var(--text) 70%);background-size:220% 100%;
-  -webkit-background-clip:text;background-clip:text;color:transparent;animation:brillo 9s ease-in-out infinite alternate}
 @keyframes brillo{to{background-position:100% 0}}
 .frase{min-height:3.6rem;margin:0 auto 2rem;max-width:32rem}
 .frase .la{font:italic 400 clamp(1.3rem,3.4vw,1.8rem) var(--serif);display:block;transition:opacity .6s}
@@ -190,3 +187,11 @@ blockquote cite{display:block;font:normal .85rem var(--sans);color:var(--muted);
 .carta .encomienda.fin{border-bottom:0;border-top:1px solid var(--line);padding:1.5rem 0 0;margin:2rem 0 0}
 @media (max-width:560px){.carta .datos{grid-template-columns:1fr}.carta .datos dd{margin-bottom:.5rem}}
 .reglas li::before{font-size:.85rem;letter-spacing:-.02em}
+
+/* ===== Título de portada (Cinzel, sin recorte de letras) ===== */
+.hero h1{font:900 clamp(1.9rem,7.6vw,6rem)/1.3 "Cinzel",var(--serif);letter-spacing:.09em;margin:0 0 .6rem;padding:.08em .1em .18em;
+  background:linear-gradient(100deg,var(--text) 10%,var(--acc2) 38%,var(--acc) 52%,var(--acc2) 66%,var(--text) 90%);background-size:240% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 26px color-mix(in srgb,var(--acc) 55%,transparent));
+  animation:brillo 8s ease-in-out infinite alternate}
+.brand{font-family:"Cinzel",var(--serif);font-weight:700;letter-spacing:.12em}
+.top nav{gap:.9rem 1.1rem}

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es" data-modo="oscuro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Recursos · Lux et Origo</title>
+    <link rel="icon" type="image/png" href="img/favicon.png">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="index.html"><span class="mk" aria-hidden="true"></span>Lux et Origo</a>
+    <nav>
+      <a href="index.html#partituras">Partituras</a>
+      <a href="recursos.html" aria-current="page">Recursos</a>
+      <a href="salmos.html">Salmos</a>
+      <a href="index.html#nosotros">Sobre nosotros</a>
+      <a href="transparencia.html">Transparencia</a>
+    </nav>
+    <div class="ctrl" id="ctrl"></div>
+  </header>
+
+  <main class="wrap" id="recursos">
+    <h2>Recursos</h2>
+    <p class="muted">Cantorales, libros y documentos para consultar y descargar gratis, siempre con su autor y su fuente.</p>
+    <div class="tools">
+      <label class="sr-only" for="q">Buscar</label>
+      <input id="q" type="search" placeholder="Buscar por título o autor…" autocomplete="off">
+      <div id="cats" class="chips" role="group" aria-label="Categoría"></div>
+    </div>
+    <p id="count" class="muted small" aria-live="polite"></p>
+    <div id="lista" class="grid" data-src="data/recursos.json" data-cats="Cantorales|Libros|Documentos" data-vacio="Estamos preparando los primeros recursos."></div>
+  </main>
+
+  <footer>
+    <p>Con fines pastorales y sin lucro. Las obras pertenecen a sus autores. <a href="transparencia.html">Carta de transparencia</a></p>
+    <p class="small muted">Contacto: <a id="mail" href="#"></a></p>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

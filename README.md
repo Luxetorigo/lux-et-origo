@@ -29,8 +29,17 @@ Arriba a la derecha hay 5 colores litúrgicos y un botón claro/oscuro. Al entra
 ```
 Campos vacíos (`""`) = ese botón dice «próximamente» o no aparece. Los filtros por autor y el orden A–Z se arman solos. Cada partitura tiene su propia página: `partitura.html?id=kyrie-alrededor-de-tu-mesa`.
 
+## Recursos y Salmos
+- **Recursos** (`recursos.html`) tiene tres categorías: Cantorales, Libros y Documentos. Se llenan desde `data/recursos.json`; **Salmos** (`salmos.html`) desde `data/salmos.json`. Sube el PDF a Drive (acceso «Cualquier persona con el enlace») y agrega un bloque:
+
+```json
+{ "id": "cantoral-ejemplo", "categoria": "Cantorales", "titulo": "Título", "autor": "Autor",
+  "descripcion": "Breve descripción", "drive": "https://drive.google.com/file/d/XXXX/view", "youtube": "" }
+```
+`categoria` debe ser exactamente `Cantorales`, `Libros` o `Documentos`. En salmos usa `"titulo"`, `"referencia"` (p. ej. «Salmo 22»), `"tiempo"` (tiempo litúrgico), `"autor"`, `"drive"` y `"youtube"`, y deja `"categoria": ""`.
+
 ## Cambiar correo y redes
-Todo está en `js/config.js`. Al cambiar el correo se actualiza en todo el sitio, incluida la carta de transparencia.
+Todo está en `js/config.js`. `emailPie` es el correo del pie de página de todo el sitio; `email` es el de la carta de transparencia.
 
 ## Verlo en tu computadora
 Los navegadores bloquean la carga del catálogo si abres `index.html` con doble clic. Desde la carpeta del sitio ejecuta:

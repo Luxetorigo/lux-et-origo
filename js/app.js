@@ -61,9 +61,11 @@
   }
 
   /* ---------- Correo y redes ---------- */
-  document.querySelectorAll("#mail, .mail").forEach(function (a) {
+  document.querySelectorAll(".mail").forEach(function (a) {
     a.textContent = S.email; a.href = "mailto:" + S.email;
   });
+  var pie = document.getElementById("mail"); // pie de página: correo del proyecto
+  if (pie) { var ep = S.emailPie || S.email; pie.textContent = ep; pie.href = "mailto:" + ep; }
   var soc = document.getElementById("social");
   if (soc) {
     (S.redes || []).filter(function (r) { return r.url; }).forEach(function (r) {
@@ -114,7 +116,7 @@
   var COLORES = {
     "kyrie": "#8b5cc9", "gloria": "#d9a93a", "credo": "#3f86d6", "sanctus": "#d2483f", "agnus dei": "#3fa37a",
     "comunion": "#d65a8a", "entrada": "#2fa5a5", "ofertorio": "#cf7a35", "salmo": "#7a6fd6", "gradual": "#7a6fd6",
-    "aleluya": "#e0b23a", "final": "#7a9a3a", "aclamacion": "#e0b23a", "padre nuestro": "#4a8fc0"
+    "aleluya": "#e0b23a", "cantorales": "#8b5cc9", "libros": "#cf7a35", "documentos": "#3f86d6", "salmos": "#2fa5a5", "final": "#7a9a3a", "aclamacion": "#e0b23a", "padre nuestro": "#4a8fc0"
   };
   function norm(s) { return (s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""); }
   function colorDe(p) {
@@ -203,6 +205,58 @@
     q.addEventListener("input", render);
 
     cargar().then(function (d) { items = d; chipsAutores(); render(); }).catch(function () { falloCarga(grid); });
+  }
+
+  /* ---------- Recursos y Salmos (lista genérica) ---------- */
+  var lista = document.getElementById("lista");
+  if (lista) {
+    var cats = (lista.dataset.cats || "").split("|").filter(Boolean), cat = "Todos", datos = [];
+    var lq = document.getElementById("q"), lcount = document.getElementById("count"), catsBox = document.getElementById("cats");
+    var pintaLista = function () {
+      var term = norm(lq.value);
+      var res = datos.filter(function (it) {
+        return (cat === "Todos" || it.categoria === cat) && (!term || norm([it.titulo, it.autor, it.descripcion, it.categoria, it.tiempo, it.referencia].join(" ")).indexOf(term) !== -1);
+      });
+      res.sort(function (a, b) { return a.titulo.localeCompare(b.titulo, "es", { sensitivity: "base" }); });
+      lista.textContent = ""; lcount.textContent = "";
+      if (!datos.length) {
+        var v = el("div", "vacio"); v.appendChild(el("span", "mk")); v.appendChild(el("strong", "", "Pronto, muy pronto"));
+        v.appendChild(el("span", "", lista.dataset.vacio || "Estamos preparando este apartado."));
+        lista.appendChild(v); return;
+      }
+      if (!res.length) { lista.appendChild(el("p", "empty", cat !== "Todos" && !term ? "Aún no hay nada en " + cat + ". Pronto, muy pronto." : "No hay resultados con ese criterio.")); return; }
+      lcount.textContent = res.length + (res.length === 1 ? " elemento" : " elementos");
+      res.forEach(function (it, i) {
+        var c = el("article", "card");
+        c.style.setProperty("--pc", colorDe(it.categoria || "salmos"));
+        c.style.transitionDelay = Math.min(i, 8) * 60 + "ms";
+        c.append(el("span", "tag", it.categoria || it.tiempo || "Salmo"), el("h3", "", it.titulo));
+        var who = [it.referencia, it.autor, it.categoria ? it.tiempo : ""].filter(Boolean).join(" · ");
+        if (who) c.appendChild(el("p", "who", who));
+        if (it.descripcion) c.appendChild(el("p", "nota", it.descripcion));
+        var act = el("div", "actions");
+        function a(txt, href, cls) { var x = el("a", cls || "", txt); x.href = href; x.target = "_blank"; x.rel = "noopener"; act.appendChild(x); }
+        if (it.drive) { a("Ver", driveVer(it.drive), "ver"); a("Descargar", driveDesc(it.drive)); }
+        if (it.youtube) a("▶ Escuchar", it.youtube);
+        if (!it.drive && !it.youtube) act.appendChild(el("span", "off", "Próximamente"));
+        c.appendChild(act); lista.appendChild(c);
+        setTimeout(function () { c.classList.add("in"); }, 30);
+      });
+    };
+    if (catsBox && cats.length) {
+      ["Todos"].concat(cats).forEach(function (n) {
+        var b = el("button", "chip", n); b.type = "button"; b.setAttribute("aria-pressed", n === cat);
+        if (n !== "Todos") b.style.setProperty("--c", colorDe(n));
+        b.addEventListener("click", function () {
+          cat = n; catsBox.querySelectorAll(".chip").forEach(function (x) { x.setAttribute("aria-pressed", x === b); }); pintaLista();
+        });
+        catsBox.appendChild(b);
+      });
+    }
+    lq.addEventListener("input", pintaLista);
+    fetch(lista.dataset.src).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (d) { datos = d; if (!d.length) document.querySelector(".tools").hidden = true; pintaLista(); })
+      .catch(function () { falloCarga(lista); });
   }
 
   /* ---------- Página de una partitura ---------- */
