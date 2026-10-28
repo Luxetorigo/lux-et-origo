@@ -2,23 +2,32 @@
 
 Sitio estático (HTML + CSS + JS). No necesita base de datos ni programar para actualizarlo.
 
+## IMPORTANTE al subir a GitHub
+Sube **todo**: `index.html`, `transparencia.html` y también las carpetas `css`, `js` y `data` (y `pdf` cuando tengas PDFs). Si falta alguna, la página se ve sin estilo o sin catálogo. Arrastra la carpeta completa al subir.
+
+## Colores y modo
+Arriba a la derecha hay 5 colores litúrgicos y un botón claro/oscuro. Al entrar, el sitio elige solo el color del tiempo litúrgico (verde en Tiempo Ordinario, morado en Adviento/Cuaresma, blanco y oro en Navidad/Pascua, rojo en Pentecostés). Cada parte de la Misa tiene además su propio color en las tarjetas.
+
 ## Cómo agregar una partitura
-1. Exporta tu PDF desde MuseScore.
-2. Cópialo a `pdf/reducidas/` (y la original, si tienes permiso, a `pdf/originales/`). Usa nombres sin espacios ni acentos, p. ej. `palazon-kyrie-reducida.pdf`.
-3. Abre `data/partituras.json` y agrega o edita un bloque:
+1. Sube tus PDFs a Google Drive (partitura reducida, y la original si la hay).
+2. En Drive: clic derecho → Compartir → Acceso general → **«Cualquier persona con el enlace»** (Lector). Sin esto la vista y la descarga no funcionan para los visitantes.
+3. Copia el enlace de cada archivo (Drive) y, si tienes audio, el enlace de YouTube.
+4. Abre `data/partituras.json` y agrega un bloque (el `id` debe ser único, sin espacios ni acentos):
 
 ```json
 {
+  "id": "kyrie-alrededor-de-tu-mesa",
   "titulo": "Señor, ten piedad",
   "obra": "Misa «Alrededor de tu mesa»",
   "compositor": "Francisco Palazón",
   "parte": "Kyrie",
   "notas": "Melodía de soprano en notación moderna.",
-  "reducida": "pdf/reducidas/palazon-kyrie-reducida.pdf",
-  "original": ""
+  "drive_reducida": "https://drive.google.com/file/d/XXXX/view?usp=sharing",
+  "drive_original": "",
+  "youtube": "https://youtu.be/XXXX"
 }
 ```
-Si `reducida` está vacío, la tarjeta dice «en preparación». Los filtros por parte de la Misa se crean solos con el campo `parte`.
+Campos vacíos (`""`) = ese botón dice «próximamente» o no aparece. Los filtros por autor y el orden A–Z se arman solos. Cada partitura tiene su propia página: `partitura.html?id=kyrie-alrededor-de-tu-mesa`.
 
 ## Cambiar correo y redes
 Todo está en `js/config.js`. Al cambiar el correo se actualiza en todo el sitio, incluida la carta de transparencia.

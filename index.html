@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" data-modo="oscuro">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,28 +14,35 @@
   <header class="top">
     <a class="brand" href="index.html">Lux et Origo</a>
     <nav>
-      <a href="#partituras">Partituras</a>
-      <a href="#proyecto">El proyecto</a>
+      <a href="index.html#partituras">Partituras</a>
+      <a href="index.html#proyecto">El proyecto</a>
       <a href="transparencia.html">Transparencia</a>
     </nav>
+    <div class="ctrl" id="ctrl"></div>
   </header>
 
   <main>
     <section class="hero">
+      <div class="rays" aria-hidden="true"></div>
       <p class="eyebrow">Canto litúrgico · Kyriale · Graduale</p>
       <h1>Lux et Origo</h1>
-      <p class="lead">Analizar el canto de la Misa para entenderlo, orarlo y cantarlo mejor.</p>
-      <a class="btn" href="#partituras">Ver partituras</a>
+      <p class="frase" id="frase" aria-live="off"><span class="la">Kyrie, eleison</span><span class="es">Señor, ten piedad</span></p>
+      <a class="btn" href="#partituras">Elegir una partitura</a>
     </section>
 
     <section id="partituras" class="wrap">
-      <h2>Partituras</h2>
-      <p class="muted">Versiones reducidas (melodía en notación moderna, de lectura sencilla) para el canto de la asamblea. Cuando es posible, junto a la original.</p>
+      <h2>Menú de partituras</h2>
+      <p class="muted">Elige una partitura para ver su página: la vista, la descarga, la original (si la hay) y el audio.</p>
 
       <div class="tools">
         <label class="sr-only" for="q">Buscar</label>
-        <input id="q" type="search" placeholder="Buscar por título, obra o compositor…" autocomplete="off">
-        <div id="chips" class="chips" role="group" aria-label="Filtrar por parte de la Misa"></div>
+        <input id="q" type="search" placeholder="Buscar por título, obra o autor…" autocomplete="off">
+        <div id="autores" class="chips" role="group" aria-label="Filtrar por autor"></div>
+        <div class="orden" role="group" aria-label="Orden alfabético">
+          <span class="lbl">Orden:</span>
+          <button type="button" class="chip" id="azb" aria-pressed="true">A → Z</button>
+          <button type="button" class="chip" id="zab" aria-pressed="false">Z → A</button>
+        </div>
       </div>
 
       <p id="count" class="muted small" aria-live="polite"></p>
