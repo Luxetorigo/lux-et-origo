@@ -127,7 +127,7 @@
   }
   function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
   function cargar() {
-    return fetch("data/partituras.json").then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
+    return fetch("data/partituras.json", { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
   }
   function falloCarga(cont) {
     cont.textContent = "";
@@ -254,7 +254,7 @@
       });
     }
     lq.addEventListener("input", pintaLista);
-    fetch(lista.dataset.src).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    fetch(lista.dataset.src, { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
       .then(function (d) { datos = d; if (!d.length) document.querySelector(".tools").hidden = true; pintaLista(); })
       .catch(function () { falloCarga(lista); });
   }
