@@ -162,3 +162,31 @@ blockquote cite{display:block;font:normal .85rem var(--sans);color:var(--muted);
 .yt{position:relative;aspect-ratio:16/9;margin-top:1rem;border-radius:12px;overflow:hidden;border:1px solid var(--line)}
 .yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .det h2{margin-top:2.5rem;font-size:1.8rem}
+
+/* ===== Logo (marca tintada con el color del tema) ===== */
+.mk{--h:1.55rem;display:inline-block;height:var(--h);width:calc(var(--h)*.636);background:currentColor;vertical-align:middle;margin-right:.6rem;
+  -webkit-mask:url(../img/logo-marca.png) center/contain no-repeat;mask:url(../img/logo-marca.png) center/contain no-repeat}
+.brand{display:inline-flex;align-items:center}
+.hero-mk{--h:clamp(5rem,14vw,7.5rem);display:block;margin:0 auto 1.4rem;color:var(--acc2);
+  filter:drop-shadow(0 0 22px color-mix(in srgb,var(--acc) 65%,transparent));animation:flota 6s ease-in-out infinite}
+@keyframes flota{50%{transform:translateY(-8px)}}
+.foot-mk{--h:2.2rem;margin:0;color:var(--acc2);opacity:.8}
+@media (prefers-reduced-motion:reduce){.hero-mk{animation:none}}
+
+/* ===== Menú vacío ===== */
+.vacio{grid-column:1/-1;text-align:center;padding:3.5rem 1rem;border:1px dashed var(--line);border-radius:14px;color:var(--muted)}
+.vacio .mk{--h:3.2rem;display:block;margin:0 auto 1rem;color:var(--acc2);opacity:.85}
+.vacio strong{display:block;font:italic 400 1.5rem var(--serif);color:var(--text);margin-bottom:.3rem}
+
+/* ===== Carta: encabezado y pie ===== */
+.carta .firma{text-align:center;color:var(--muted);margin:-.8rem 0 2rem}
+.carta h2{font-size:1.7rem;text-align:center;margin:2.5rem 0 1rem}
+.carta h2::after{margin-left:auto;margin-right:auto}
+.carta .proemio p{margin:0 0 1rem}
+.carta .lat{font-style:italic}
+.carta .datos{display:grid;grid-template-columns:max-content 1fr;gap:.4rem 1.4rem;margin:2.5rem 0 1.5rem;padding:1.2rem 1.4rem;border:1px solid var(--line);border-radius:12px;background:var(--bg2)}
+.carta .datos dt{color:var(--muted)} .carta .datos dd{margin:0;font-weight:600}
+.carta .pdf{display:inline-block;margin:.5rem 0 0}
+.carta .encomienda.fin{border-bottom:0;border-top:1px solid var(--line);padding:1.5rem 0 0;margin:2rem 0 0}
+@media (max-width:560px){.carta .datos{grid-template-columns:1fr}.carta .datos dd{margin-bottom:.5rem}}
+.reglas li::before{font-size:.85rem;letter-spacing:-.02em}

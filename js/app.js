@@ -170,6 +170,13 @@
       });
       list.sort(function (a, b) { return a.titulo.localeCompare(b.titulo, "es", { sensitivity: "base" }) * (orden === "az" ? 1 : -1); });
       grid.textContent = "";
+      if (!items.length) {
+        var v = el("div", "vacio"); v.appendChild(el("span", "mk")); v.appendChild(el("strong", "", "Pronto, muy pronto"));
+        v.appendChild(el("span", "", "Estamos preparando las primeras partituras. Vuelve en unos días."));
+        grid.appendChild(v); count.textContent = "";
+        document.querySelector(".tools").hidden = true;
+        return;
+      }
       if (!list.length) grid.appendChild(el("p", "empty", "No hay partituras con ese criterio."));
       else list.forEach(function (it, i) { grid.appendChild(card(it, i)); });
       count.textContent = list.length + (list.length === 1 ? " partitura" : " partituras");
