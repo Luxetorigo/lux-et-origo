@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lux et Origo · Canto litúrgico</title>
+  <meta name="description" content="Análisis y partituras reducidas de canto litúrgico, con fines pastorales y sin lucro.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="index.html">Lux et Origo</a>
+    <nav>
+      <a href="#partituras">Partituras</a>
+      <a href="#proyecto">El proyecto</a>
+      <a href="transparencia.html">Transparencia</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">Canto litúrgico · Kyriale · Graduale</p>
+      <h1>Lux et Origo</h1>
+      <p class="lead">Analizar el canto de la Misa para entenderlo, orarlo y cantarlo mejor.</p>
+      <a class="btn" href="#partituras">Ver partituras</a>
+    </section>
+
+    <section id="partituras" class="wrap">
+      <h2>Partituras</h2>
+      <p class="muted">Versiones reducidas (melodía en notación moderna, de lectura sencilla) para el canto de la asamblea. Cuando es posible, junto a la original.</p>
+
+      <div class="tools">
+        <label class="sr-only" for="q">Buscar</label>
+        <input id="q" type="search" placeholder="Buscar por título, obra o compositor…" autocomplete="off">
+        <div id="chips" class="chips" role="group" aria-label="Filtrar por parte de la Misa"></div>
+      </div>
+
+      <p id="count" class="muted small" aria-live="polite"></p>
+      <div id="grid" class="grid"></div>
+    </section>
+
+    <section id="proyecto" class="wrap narrow">
+      <h2>El proyecto</h2>
+      <p>Lux et Origo es un canal de evangelización por el canto. Cada pieza se estudia desde tres miradas: <em>litúrgica</em> (dónde y por qué se canta), <em>teológica</em> (qué dice) y <em>musical</em> (cómo está hecha), siempre a partir de las composiciones originales.</p>
+      <p>Las partituras reducidas son un servicio pastoral secundario para que más comunidades puedan cantar. Lee la <a href="transparencia.html">carta de transparencia</a> para conocer cómo se usan y cómo solicitar el retiro de cualquier obra.</p>
+      <ul id="social" class="social"></ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>Con fines pastorales y sin lucro. Las obras pertenecen a sus autores. <a href="transparencia.html">Carta de transparencia</a></p>
+    <p class="small muted">Contacto: <a id="mail" href="#"></a></p>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
