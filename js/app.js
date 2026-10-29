@@ -64,6 +64,8 @@
   document.querySelectorAll(".mail").forEach(function (a) {
     a.textContent = S.email; a.href = "mailto:" + S.email;
   });
+  var rep = document.getElementById("reporte");
+  if (rep) { var er = S.emailPie || S.email; rep.href = "mailto:" + er + "?subject=" + encodeURIComponent("Reportar un error - Lux et Origo") + "&body=" + encodeURIComponent("Página donde ocurrió el error: " + location.href + "\n\nDescribe el error:\n"); }
   var pie = document.getElementById("mail"); // pie de página: correo del proyecto
   if (pie) { var ep = S.emailPie || S.email; pie.textContent = ep; pie.href = "mailto:" + ep; }
   var soc = document.getElementById("social");
@@ -225,7 +227,6 @@
       c.href = "partitura.html?id=" + encodeURIComponent(it.id);
       c.style.setProperty("--pc", colorDe(it.parte || it.tipo));
       c.style.transitionDelay = Math.min(i, 8) * 60 + "ms";
-      c.appendChild(miniatura(it.drive_reducida || it.drive_original, it.titulo));
       if (it.parte || it.tipo) c.appendChild(el("span", "tag", it.parte || it.tipo));
       c.appendChild(el("h3", "", it.titulo));
       c.appendChild(el("p", "who", [it.parte ? it.tipo : "", it.autor || ANON].filter(Boolean).join(" · ")));
@@ -292,7 +293,6 @@
       c.href = (modo === "recursos" ? "recurso.html" : "salmo.html") + "?id=" + encodeURIComponent(it.id);
       c.style.setProperty("--pc", colorDe(modo === "recursos" ? it.categoria : "salmos"));
       c.style.transitionDelay = Math.min(i, 8) * 50 + "ms";
-      c.appendChild(miniatura(it.drive, it.titulo, "fthumb"));
       c.appendChild(el("span", "tag", modo === "recursos" ? (it.categoria || "Recurso") : (it.numero ? "Salmo " + it.numero : "Salmo")));
       var mid = el("div", "mid"); mid.appendChild(el("h3", "", it.titulo));
       var extra = modo === "recursos" ? it.editorial : it.rito;
