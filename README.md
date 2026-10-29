@@ -8,38 +8,23 @@ Sube **todo**: `index.html`, `transparencia.html` y también las carpetas `css`,
 ## Colores y modo
 Arriba a la derecha hay 5 colores litúrgicos y un botón claro/oscuro. Al entrar, el sitio elige solo el color del tiempo litúrgico (verde en Tiempo Ordinario, morado en Adviento/Cuaresma, blanco y oro en Navidad/Pascua, rojo en Pentecostés). Cada parte de la Misa tiene además su propio color en las tarjetas.
 
-## Cómo agregar una partitura
-1. Sube tus PDFs a Google Drive (partitura reducida, y la original si la hay).
-2. En Drive: clic derecho → Compartir → Acceso general → **«Cualquier persona con el enlace»** (Lector). Sin esto la vista y la descarga no funcionan para los visitantes.
-3. Copia el enlace de cada archivo (Drive) y, si tienes audio, el enlace de YouTube.
-4. Abre `data/partituras.json` y agrega un bloque (el `id` debe ser único, sin espacios ni acentos):
+## Cómo se carga el contenido (Excel)
+Todo sale de `herramientas/lux_et_origo_Datos.xlsx`, que tiene tres hojas con datos: **Partituras**, **Recursos** y **Salmos**. La primera hoja explica qué se muestra cuando falta un dato. Los pasos son:
+1. Sube tus PDFs a Google Drive y compártelos como **«Cualquier persona con el enlace»** (si no, no se ven ni se descargan).
+2. Llena una fila por elemento en el Excel. Una celda vacía se escribe con **0**.
+3. Pásame el Excel (o corre `python3 herramientas/xlsx_a_json.py herramientas/lux_et_origo_Datos.xlsx`; necesita `pip install openpyxl`). Eso reescribe `data/partituras.json`, `data/recursos.json` y `data/salmos.json`.
 
-```json
-{
-  "id": "kyrie-alrededor-de-tu-mesa",
-  "titulo": "Señor, ten piedad",
-  "obra": "Misa «Alrededor de tu mesa»",
-  "compositor": "Francisco Palazón",
-  "parte": "Kyrie",
-  "notas": "Melodía de soprano en notación moderna.",
-  "drive_reducida": "https://drive.google.com/file/d/XXXX/view?usp=sharing",
-  "drive_original": "",
-  "youtube": "https://youtu.be/XXXX"
-}
-```
-Campos vacíos (`""`) = ese botón dice «próximamente» o no aparece. Los filtros por autor y el orden A–Z se arman solos. Cada partitura tiene su propia página: `partitura.html?id=kyrie-alrededor-de-tu-mesa`.
-
-## Recursos y Salmos
-- **Recursos** (`recursos.html`) tiene tres categorías: Cantorales, Libros y Documentos. Se llenan desde `data/recursos.json`; **Salmos** (`salmos.html`) desde `data/salmos.json`. Sube el PDF a Drive (acceso «Cualquier persona con el enlace») y agrega un bloque:
-
-```json
-{ "id": "cantoral-ejemplo", "categoria": "Cantorales", "titulo": "Título", "autor": "Autor",
-  "descripcion": "Breve descripción", "drive": "https://drive.google.com/file/d/XXXX/view", "youtube": "" }
-```
-`categoria` debe ser exactamente `Cantorales`, `Libros` o `Documentos`. En salmos usa `"titulo"`, `"referencia"` (p. ej. «Salmo 22»), `"tiempo"` (tiempo litúrgico), `"autor"`, `"drive"` y `"youtube"`, y deja `"categoria": ""`.
-
-## Cargar todo desde un Excel
-En `herramientas/plantilla-lux-et-origo.xlsx` hay tres hojas (Partituras, Recursos, Salmos) con las columnas del sitio. Llénala y pásamela: yo la convierto y publico. También puedes hacerlo tú con `python3 herramientas/xlsx_a_json.py TuExcel.xlsx` (necesita `pip install openpyxl`), que reescribe los tres archivos de `data/`.
+### Qué pasa cuando un campo está vacío (0)
+| Campo | En el sitio |
+|---|---|
+| Título | La fila no aparece |
+| Tipo, Parte, Tiempo, Categoría, No. de salmo | No se muestra ni se usa en los filtros |
+| Autor | «Anónimo» (no entra en el filtro de autor) |
+| Drive, Original, YouTube, Fuente, Editorial | «No disponible» |
+| Condición | «No hay dominio específico» |
+| Autorizada por | No se muestra |
+| Día o rito (salmos) | «No específico» |
+| Descripción | «Aún no hay descripción» |
 
 ## Cambiar correo y redes
 Todo está en `js/config.js`. `emailPie` es el correo del pie de página de todo el sitio; `email` es el de la carta de transparencia.

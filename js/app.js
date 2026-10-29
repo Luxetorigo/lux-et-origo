@@ -98,7 +98,7 @@
     }, 4800);
   }
 
-  /* ---------- Utilidades de enlaces ---------- */
+  /* ---------- Utilidades ---------- */
   function driveId(u) {
     if (!u) return "";
     var m = u.match(/\/d\/([\w-]+)/) || u.match(/[?&]id=([\w-]+)/);
@@ -113,33 +113,86 @@
     return m ? m[1] : "";
   }
 
+  var ND = "No disponible", ANON = "Anónimo";
   var COLORES = {
     "kyrie": "#8b5cc9", "gloria": "#d9a93a", "credo": "#3f86d6", "sanctus": "#d2483f", "agnus dei": "#3fa37a",
     "comunion": "#d65a8a", "entrada": "#2fa5a5", "ofertorio": "#cf7a35", "salmo": "#7a6fd6", "gradual": "#7a6fd6",
-    "aleluya": "#e0b23a", "cantorales": "#8b5cc9", "libros": "#cf7a35", "documentos": "#3f86d6", "salmos": "#2fa5a5", "final": "#7a9a3a", "aclamacion": "#e0b23a", "padre nuestro": "#4a8fc0"
+    "aleluya": "#e0b23a", "cantorales": "#8b5cc9", "libros": "#cf7a35", "documentos": "#3f86d6", "salmos": "#2fa5a5",
+    "final": "#7a9a3a", "aclamacion": "#e0b23a", "padre nuestro": "#4a8fc0", "misa": "#8b5cc9", "canto": "#d9a93a"
   };
-  function norm(s) { return (s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""); }
+  function norm(s) { return (s || "").toString().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""); }
   function colorDe(p) {
     var k = norm(p);
+    if (!k) return "var(--acc)";
     if (COLORES[k]) return COLORES[k];
     var h = 0; for (var i = 0; i < k.length; i++) h = (h * 31 + k.charCodeAt(i)) % 360;
     return "hsl(" + h + ",55%,52%)";
   }
   function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
-  function cargar() {
-    return fetch("data/partituras.json", { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
+  function cargar(src) {
+    return fetch(src, { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
   }
   function falloCarga(cont) {
     cont.textContent = "";
-    cont.appendChild(el("p", "empty", "No se pudo cargar el catálogo. Revisa que las carpetas css, js y data estén subidas junto a index.html."));
+    cont.appendChild(el("p", "empty", "No se pudo cargar la información. Revisa que las carpetas css, js y data estén subidas junto a index.html."));
+  }
+  function vacioMsg(txt) {
+    var v = el("div", "vacio"); v.appendChild(el("span", "mk")); v.appendChild(el("strong", "", "Pronto, muy pronto"));
+    v.appendChild(el("span", "", txt)); return v;
+  }
+  /* Botón de enlace; si no hay enlace queda desactivado con «No disponible» */
+  function enlace(cont, cls, txtSi, txtNo, href) {
+    if (href) { var a = el("a", cls, txtSi); a.href = href; a.target = "_blank"; a.rel = "noopener"; cont.appendChild(a); return a; }
+    var s = el("span", "off", txtNo); cont.appendChild(s); return s;
+  }
+
+  /* Filtros: un grupo por campo. Lo vacío o «Anónimo» no se clasifica. Pocos valores = botones; muchos = lista. */
+  function filtros(box, items, dims, cambio) {
+    var est = {};
+    box.textContent = "";
+    dims.forEach(function (d) {
+      var vals = d.fijos ? d.fijos.slice() : items.map(function (i) { return i[d.campo]; })
+        .filter(function (v, i, a) { return v && norm(v) !== "anonimo" && a.indexOf(v) === i; });
+      if (!vals.length) return;
+      var num = vals.every(function (v) { return /^\d+$/.test(v); });
+      if (!d.fijos) vals.sort(function (a, b) { return num ? a - b : a.localeCompare(b, "es"); });
+      est[d.campo] = "*";
+      var fila = el("div", "fil"); fila.appendChild(el("span", "lbl", d.label + ":"));
+      var fmt = d.fmt || function (v) { return v; };
+      if (vals.length <= 8) {
+        ["*"].concat(vals).forEach(function (v) {
+          var b = el("button", "chip", v === "*" ? "Cualquiera" : fmt(v)); b.type = "button"; b.setAttribute("aria-pressed", v === "*");
+          if (v !== "*" && d.color) b.style.setProperty("--c", colorDe(v));
+          b.addEventListener("click", function () {
+            est[d.campo] = v; fila.querySelectorAll(".chip").forEach(function (x) { x.setAttribute("aria-pressed", x === b); }); cambio();
+          });
+          fila.appendChild(b);
+        });
+      } else {
+        var s = el("select"); s.setAttribute("aria-label", d.label);
+        ["*"].concat(vals).forEach(function (v) { var o = el("option", "", v === "*" ? "Cualquiera" : fmt(v)); o.value = v; s.appendChild(o); });
+        s.addEventListener("change", function () { est[d.campo] = s.value; cambio(); });
+        fila.appendChild(s);
+      }
+      box.appendChild(fila);
+    });
+    return est;
+  }
+  function pasa(it, est) {
+    return Object.keys(est).every(function (k) { return est[k] === "*" || it[k] === est[k]; });
+  }
+  function ordena(list, dir) {
+    return list.sort(function (a, b) { return a.titulo.localeCompare(b.titulo, "es", { sensitivity: "base" }) * dir; });
   }
 
   /* ---------- Menú principal ---------- */
   var grid = document.getElementById("grid");
   if (grid) {
-    var q = document.getElementById("q"), autoresBox = document.getElementById("autores"), count = document.getElementById("count"),
+    var q = document.getElementById("q"), fbox = document.getElementById("filtros"), count = document.getElementById("count"),
         azb = document.getElementById("azb"), zab = document.getElementById("zab");
-    var items = [], autor = "Todos", orden = "az";
+    var items = [], est = {}, orden = "az";
+    var DIMS = [{ campo: "compositor", label: "Autor" }, { campo: "tipo", label: "Tipo", color: true },
+                { campo: "parte", label: "Parte", color: true }, { campo: "tiempo", label: "Tiempo" }];
 
     var io = ("IntersectionObserver" in window) ? new IntersectionObserver(function (es) {
       es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
@@ -148,11 +201,13 @@
     var card = function (it, i) {
       var c = el("a", "card");
       c.href = "partitura.html?id=" + encodeURIComponent(it.id);
-      c.style.setProperty("--pc", colorDe(it.parte));
+      c.style.setProperty("--pc", colorDe(it.parte || it.tipo));
       c.style.transitionDelay = Math.min(i, 8) * 60 + "ms";
       var ini = el("span", "ini", (it.titulo || "?").charAt(0).toUpperCase()); ini.setAttribute("aria-hidden", "true");
-      c.append(ini, el("span", "tag", it.parte || "Pieza"), el("h3", "", it.titulo),
-               el("p", "who", [it.obra, it.compositor].filter(Boolean).join(" · ")));
+      c.appendChild(ini);
+      if (it.parte || it.tipo) c.appendChild(el("span", "tag", it.parte || it.tipo));
+      c.appendChild(el("h3", "", it.titulo));
+      c.appendChild(el("p", "who", [it.parte ? it.tipo : "", it.compositor || ANON].filter(Boolean).join(" · ")));
       var b = el("div", "badges");
       [["drive_reducida", "Partitura"], ["drive_original", "Original"], ["youtube", "Audio"]].forEach(function (x) {
         b.appendChild(el("span", "badge" + (it[x[0]] ? "" : " no"), x[1]));
@@ -166,105 +221,88 @@
     var render = function () {
       var term = norm(q.value);
       var list = items.filter(function (it) {
-        var okA = autor === "Todos" || it.compositor === autor;
-        var hay = norm([it.titulo, it.obra, it.compositor, it.parte].join(" "));
-        return okA && (!term || hay.indexOf(term) !== -1);
+        var hay = norm([it.titulo, it.tipo, it.compositor || ANON, it.parte, it.tiempo, it.descripcion].join(" "));
+        return pasa(it, est) && (!term || hay.indexOf(term) !== -1);
       });
-      list.sort(function (a, b) { return a.titulo.localeCompare(b.titulo, "es", { sensitivity: "base" }) * (orden === "az" ? 1 : -1); });
+      ordena(list, orden === "az" ? 1 : -1);
       grid.textContent = "";
       if (!items.length) {
-        var v = el("div", "vacio"); v.appendChild(el("span", "mk")); v.appendChild(el("strong", "", "Pronto, muy pronto"));
-        v.appendChild(el("span", "", "Estamos preparando las primeras partituras. Vuelve en unos días."));
-        grid.appendChild(v); count.textContent = "";
-        document.querySelector(".tools").hidden = true;
-        return;
+        grid.appendChild(vacioMsg("Estamos preparando las primeras partituras. Vuelve en unos días."));
+        count.textContent = ""; document.querySelector(".tools").hidden = true; return;
       }
       if (!list.length) grid.appendChild(el("p", "empty", "No hay partituras con ese criterio."));
       else list.forEach(function (it, i) { grid.appendChild(card(it, i)); });
       count.textContent = list.length + (list.length === 1 ? " partitura" : " partituras");
     };
 
-    var chipsAutores = function () {
-      var autores = ["Todos"].concat(items.map(function (i) { return i.compositor; }).filter(function (v, i, a) { return v && a.indexOf(v) === i; }).sort(function (a, b) { return a.localeCompare(b, "es"); }));
-      autores.forEach(function (a) {
-        var b = el("button", "chip", a); b.type = "button"; b.setAttribute("aria-pressed", a === autor);
-        b.addEventListener("click", function () {
-          autor = a;
-          autoresBox.querySelectorAll(".chip").forEach(function (x) { x.setAttribute("aria-pressed", x === b); });
-          render();
-        });
-        autoresBox.appendChild(b);
-      });
-    };
-
-    function setOrden(o) {
-      orden = o; azb.setAttribute("aria-pressed", o === "az"); zab.setAttribute("aria-pressed", o === "za"); render();
-    }
+    function setOrden(o) { orden = o; azb.setAttribute("aria-pressed", o === "az"); zab.setAttribute("aria-pressed", o === "za"); render(); }
     azb.addEventListener("click", function () { setOrden("az"); });
     zab.addEventListener("click", function () { setOrden("za"); });
     q.addEventListener("input", render);
 
-    cargar().then(function (d) { items = d; chipsAutores(); render(); }).catch(function () { falloCarga(grid); });
+    cargar("data/partituras.json").then(function (d) { items = d; est = filtros(fbox, items, DIMS, render); render(); })
+      .catch(function () { falloCarga(grid); });
   }
 
-  /* ---------- Recursos y Salmos (lista genérica) ---------- */
+  /* ---------- Recursos y Salmos ---------- */
   var lista = document.getElementById("lista");
   if (lista) {
-    var cats = (lista.dataset.cats || "").split("|").filter(Boolean), cat = "Todos", datos = [];
-    var lq = document.getElementById("q"), lcount = document.getElementById("count"), catsBox = document.getElementById("cats");
+    var modo = lista.dataset.tipo, datos = [], estL = {};
+    var lq = document.getElementById("q"), lcount = document.getElementById("count"), lbox = document.getElementById("filtros");
+    var DIMSL = modo === "recursos"
+      ? [{ campo: "categoria", label: "Categoría", fijos: ["Cantorales", "Libros", "Documentos"], color: true }, { campo: "autor", label: "Autor" }]
+      : [{ campo: "numero", label: "Salmo", fmt: function (n) { return "Salmo " + n; } }, { campo: "rito", label: "Día o rito" }, { campo: "autor", label: "Autor" }];
+
+    var tarjeta = function (it, i) {
+      var c = el("article", "card");
+      c.style.setProperty("--pc", colorDe(modo === "recursos" ? it.categoria : "salmos"));
+      c.style.transitionDelay = Math.min(i, 8) * 60 + "ms";
+      var etiqueta = modo === "recursos" ? it.categoria : (it.numero ? "Salmo " + it.numero : "");
+      if (etiqueta) c.appendChild(el("span", "tag", etiqueta));
+      c.appendChild(el("h3", "", it.titulo));
+      c.appendChild(el("p", "who", "Autor: " + (it.autor || ANON)));
+      if (modo === "recursos") c.appendChild(el("p", "who", "Editorial: " + (it.editorial || ND)));
+      else c.appendChild(el("p", "who", "Día o rito: " + (it.rito || "No específico")));
+      c.appendChild(el("p", "nota", it.descripcion || "Aún no hay descripción."));
+      var act = el("div", "actions");
+      if (it.drive) { enlace(act, "ver", "Ver", "", driveVer(it.drive)); enlace(act, "", "Descargar", "", driveDesc(it.drive)); }
+      else enlace(act, "", "", "Drive: " + ND, "");
+      if (modo === "salmos") enlace(act, "", "▶ Escuchar", "YouTube: " + ND, it.youtube);
+      enlace(act, "", "Fuente", "Fuente: " + ND, it.fuente);
+      c.appendChild(act);
+      setTimeout(function () { c.classList.add("in"); }, 30);
+      return c;
+    };
+
     var pintaLista = function () {
       var term = norm(lq.value);
       var res = datos.filter(function (it) {
-        return (cat === "Todos" || it.categoria === cat) && (!term || norm([it.titulo, it.autor, it.descripcion, it.categoria, it.tiempo, it.referencia].join(" ")).indexOf(term) !== -1);
+        return pasa(it, estL) && (!term || norm([it.titulo, it.autor || ANON, it.descripcion, it.categoria, it.rito, it.editorial, it.numero ? "salmo " + it.numero : ""].join(" ")).indexOf(term) !== -1);
       });
-      res.sort(function (a, b) { return a.titulo.localeCompare(b.titulo, "es", { sensitivity: "base" }); });
+      ordena(res, 1);
       lista.textContent = ""; lcount.textContent = "";
       if (!datos.length) {
-        var v = el("div", "vacio"); v.appendChild(el("span", "mk")); v.appendChild(el("strong", "", "Pronto, muy pronto"));
-        v.appendChild(el("span", "", lista.dataset.vacio || "Estamos preparando este apartado."));
-        lista.appendChild(v); return;
+        lista.appendChild(vacioMsg(modo === "recursos" ? "Estamos preparando los primeros recursos." : "Estamos preparando los primeros salmos."));
+        document.querySelector(".tools").hidden = true; return;
       }
-      if (!res.length) { lista.appendChild(el("p", "empty", cat !== "Todos" && !term ? "Aún no hay nada en " + cat + ". Pronto, muy pronto." : "No hay resultados con ese criterio.")); return; }
+      if (!res.length) { lista.appendChild(el("p", "empty", "No hay resultados con ese criterio.")); return; }
       lcount.textContent = res.length + (res.length === 1 ? " elemento" : " elementos");
-      res.forEach(function (it, i) {
-        var c = el("article", "card");
-        c.style.setProperty("--pc", colorDe(it.categoria || "salmos"));
-        c.style.transitionDelay = Math.min(i, 8) * 60 + "ms";
-        c.append(el("span", "tag", it.categoria || it.tiempo || "Salmo"), el("h3", "", it.titulo));
-        var who = [it.referencia, it.autor, it.categoria ? it.tiempo : ""].filter(Boolean).join(" · ");
-        if (who) c.appendChild(el("p", "who", who));
-        if (it.descripcion) c.appendChild(el("p", "nota", it.descripcion));
-        var act = el("div", "actions");
-        function a(txt, href, cls) { var x = el("a", cls || "", txt); x.href = href; x.target = "_blank"; x.rel = "noopener"; act.appendChild(x); }
-        if (it.drive) { a("Ver", driveVer(it.drive), "ver"); a("Descargar", driveDesc(it.drive)); }
-        if (it.youtube) a("▶ Escuchar", it.youtube);
-        if (it.fuente) a("Fuente", it.fuente);
-        if (!it.drive && !it.youtube) act.appendChild(el("span", "off", "Próximamente"));
-        c.appendChild(act); lista.appendChild(c);
-        setTimeout(function () { c.classList.add("in"); }, 30);
-      });
+      res.forEach(function (it, i) { lista.appendChild(tarjeta(it, i)); });
     };
-    if (catsBox && cats.length) {
-      ["Todos"].concat(cats).forEach(function (n) {
-        var b = el("button", "chip", n); b.type = "button"; b.setAttribute("aria-pressed", n === cat);
-        if (n !== "Todos") b.style.setProperty("--c", colorDe(n));
-        b.addEventListener("click", function () {
-          cat = n; catsBox.querySelectorAll(".chip").forEach(function (x) { x.setAttribute("aria-pressed", x === b); }); pintaLista();
-        });
-        catsBox.appendChild(b);
-      });
-    }
+
     lq.addEventListener("input", pintaLista);
-    fetch(lista.dataset.src, { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
-      .then(function (d) { datos = d; if (!d.length) document.querySelector(".tools").hidden = true; pintaLista(); })
-      .catch(function () { falloCarga(lista); });
+    cargar(lista.dataset.src).then(function (d) {
+      datos = d;
+      estL = filtros(lbox, datos, DIMSL, pintaLista);
+      pintaLista();
+    }).catch(function () { falloCarga(lista); });
   }
 
   /* ---------- Página de una partitura ---------- */
   var det = document.getElementById("det");
   if (det) {
     var id = new URLSearchParams(location.search).get("id");
-    cargar().then(function (d) {
+    cargar("data/partituras.json").then(function (d) {
       var it = d.filter(function (x) { return x.id === id; })[0];
       det.textContent = "";
       var volver = el("a", "volver", "← Todas las partituras"); volver.href = "index.html#partituras";
@@ -272,27 +310,25 @@
       if (!it) { det.appendChild(el("p", "empty", "No encontré esa partitura.")); return; }
 
       document.title = it.titulo + " · Lux et Origo";
-      det.style.setProperty("--pc", colorDe(it.parte));
-      det.appendChild(el("span", "tag", it.parte || "Pieza"));
+      det.style.setProperty("--pc", colorDe(it.parte || it.tipo));
+      if (it.parte || it.tipo) det.appendChild(el("span", "tag", it.parte || it.tipo));
       det.appendChild(el("h1", "", it.titulo));
-      det.appendChild(el("p", "who", [it.obra, it.compositor].filter(Boolean).join(" · ")));
-      if (it.notas) det.appendChild(el("p", "nota", it.notas));
-      if (it.condicion) {
-        var cp = el("p", "cond"); cp.appendChild(el("strong", "", "Condición: ")); 
-        cp.appendChild(document.createTextNode(it.condicion + (it.autorizada_por ? " — autorizada por " + it.autorizada_por : "")));
-        det.appendChild(cp);
-      }
+      det.appendChild(el("p", "who", [it.parte ? it.tipo : "", it.compositor || ANON, it.tiempo].filter(Boolean).join(" · ")));
+      det.appendChild(el("p", "nota", it.descripcion || "Aún no hay descripción."));
+      var cp = el("p", "cond"); cp.appendChild(el("strong", "", "Condición: "));
+      cp.appendChild(document.createTextNode((it.condicion || "No hay dominio específico") + (it.autorizada_por ? " — autorizada por " + it.autorizada_por : "")));
+      det.appendChild(cp);
 
       var bots = el("div", "botones");
       function boton(txt, href, primario) {
         var a = el("a", "bt" + (primario ? " p" : ""), txt);
-        if (href) { a.href = href; a.target = "_blank"; a.rel = "noopener"; } else { a.className = "bt no"; a.setAttribute("aria-disabled", "true"); }
-        return a;
+        a.href = href; a.target = "_blank"; a.rel = "noopener"; return a;
       }
-      bots.appendChild(it.drive_reducida ? boton("⬇ Descargar partitura", driveDesc(it.drive_reducida), true) : boton("Partitura: próximamente"));
-      if (it.drive_original) bots.appendChild(boton("⬇ Original (Drive)", driveVer(it.drive_original)));
-      if (ytId(it.youtube) || it.youtube) bots.appendChild(boton("▶ Escuchar en YouTube", it.youtube));
-      if (it.fuente) bots.appendChild(boton("Fuente", it.fuente));
+      function noDisp(txt) { var s = el("span", "bt no", txt); return s; }
+      bots.appendChild(it.drive_reducida ? boton("⬇ Descargar partitura", driveDesc(it.drive_reducida), true) : noDisp("Partitura: " + ND));
+      bots.appendChild(it.drive_original ? boton("⬇ Original (Drive)", driveVer(it.drive_original)) : noDisp("Original: " + ND));
+      bots.appendChild(it.youtube ? boton("▶ Escuchar en YouTube", it.youtube) : noDisp("YouTube: " + ND));
+      bots.appendChild(it.fuente ? boton("Fuente", it.fuente) : noDisp("Fuente: " + ND));
       det.appendChild(bots);
 
       /* Vista de la partitura */
@@ -311,7 +347,7 @@
         var l = el("a", "", "abrir"); l.href = driveVer(o[1]); l.target = "_blank"; l.rel = "noopener"; p.appendChild(l);
         vista.appendChild(p);
       }
-      if (!opciones.length) vista.appendChild(el("div", "pendiente", "Esta partitura estará disponible próximamente."));
+      if (!opciones.length) vista.appendChild(el("div", "pendiente", "Vista: " + ND + ". Esta partitura aún no tiene archivo."));
       else {
         if (opciones.length > 1) {
           opciones.forEach(function (o, i) {

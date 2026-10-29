@@ -29,10 +29,11 @@
     <p class="muted">Salmos responsoriales y cantos de la Sagrada Escritura para cantar en comunidad.</p>
     <div class="tools">
       <label class="sr-only" for="q">Buscar</label>
-      <input id="q" type="search" placeholder="Buscar por salmo, título o tiempo litúrgico…" autocomplete="off">
+      <input id="q" type="search" placeholder="Buscar por título, salmo, autor o día…" autocomplete="off">
+      <div id="filtros" class="filtros"></div>
     </div>
     <p id="count" class="muted small" aria-live="polite"></p>
-    <div id="lista" class="grid" data-src="data/salmos.json" data-cats="" data-vacio="Estamos preparando los primeros salmos."></div>
+    <div id="lista" class="grid" data-tipo="salmos" data-src="data/salmos.json"></div>
   </main>
 
   <footer>

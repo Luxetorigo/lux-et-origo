@@ -30,10 +30,10 @@
     <div class="tools">
       <label class="sr-only" for="q">Buscar</label>
       <input id="q" type="search" placeholder="Buscar por título o autor…" autocomplete="off">
-      <div id="cats" class="chips" role="group" aria-label="Categoría"></div>
+      <div id="filtros" class="filtros"></div>
     </div>
     <p id="count" class="muted small" aria-live="polite"></p>
-    <div id="lista" class="grid" data-src="data/recursos.json" data-cats="Cantorales|Libros|Documentos" data-vacio="Estamos preparando los primeros recursos."></div>
+    <div id="lista" class="grid" data-tipo="recursos" data-src="data/recursos.json"></div>
   </main>
 
   <footer>

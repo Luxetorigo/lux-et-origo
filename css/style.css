@@ -200,3 +200,12 @@ blockquote cite{display:block;font:normal .85rem var(--sans);color:var(--muted);
 .volver{display:block;width:fit-content;margin-bottom:1.6rem}
 .det .cond{margin:.4rem 0 0;font-size:.92rem;color:var(--muted)}
 .det .cond strong{color:var(--text)}
+
+/* ===== Filtros ===== */
+.fil{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;margin-top:.8rem}
+.fil .lbl{font-size:.85rem;color:var(--muted);min-width:4.2rem}
+.fil select{font:inherit;font-size:.9rem;padding:.35rem .9rem;border-radius:999px;background:var(--bg2);color:var(--text);border:1px solid var(--line);max-width:100%}
+.fil select:focus{border-color:var(--acc);outline:none}
+.det .nota{margin:.8rem 0 0}
+.bt.no{cursor:default}
+.actions .off{font-size:.8rem}

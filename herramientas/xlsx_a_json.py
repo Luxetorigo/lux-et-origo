@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """Convierte el Excel de Lux et Origo en los JSON que lee el sitio.
 
-Uso:  python3 herramientas/xlsx_a_json.py MiExcel.xlsx
+Uso:  python3 herramientas/xlsx_a_json.py herramientas/lux_et_origo_Datos.xlsx
 Lee las hojas «Partituras», «Recursos» y «Salmos» y escribe
 data/partituras.json, data/recursos.json y data/salmos.json.
+
+Regla de celdas vacías: una celda en blanco o con 0 cuenta como "sin dato".
+El sitio es quien muestra «No disponible», «Anónimo», etc. (ver la primera hoja del Excel).
 """
 import json, re, sys, unicodedata
 from pathlib import Path
@@ -16,34 +19,33 @@ def norm(s):
 def slug(s):
     return re.sub(r"[^a-z0-9]+", "-", norm(s)).strip("-")
 
-# campo -> nombres de columna aceptados (ya normalizados)
+def limpia(v):
+    if v is None: return ""
+    if isinstance(v, float) and v.is_integer(): v = int(v)
+    s = str(v).strip()
+    return "" if s in ("0", "-", "—") else s
+
 HOJAS = {
     "partituras": ("data/partituras.json", {
-        "titulo": ["titulo", "nombre", "pieza"], "obra": ["obra", "misa"],
-        "compositor": ["autor", "compositor"], "parte": ["parte", "parte de la misa"],
-        "notas": ["notas", "nota", "descripcion"],
-        "drive_reducida": ["drive reducida", "drive partitura", "link de drive", "drive"],
-        "drive_original": ["drive original", "link original", "link de la original", "original"],
-        "youtube": ["youtube", "link youtube", "link de youtube", "audio"],
-        "fuente": ["fuente", "link de la fuente", "link fuente"],
-        "condicion": ["condicion", "estado de derechos"],
-        "autorizada_por": ["autorizada por", "autorizacion", "autorizado por"],
-        "id": ["id"],
+        "titulo": ["titulo"], "tipo": ["tipo"], "compositor": ["autor", "compositor"], "parte": ["parte"],
+        "drive_reducida": ["drive reducida"], "drive_original": ["drive original"], "youtube": ["youtube"],
+        "fuente": ["fuente"], "condicion": ["condicion"], "autorizada_por": ["autorizada por"],
+        "tiempo": ["tiempo"], "descripcion": ["descripcion"],
     }),
     "recursos": ("data/recursos.json", {
-        "categoria": ["categoria", "tipo"], "titulo": ["titulo", "nombre"],
-        "autor": ["autor"], "descripcion": ["descripcion", "notas"],
-        "drive": ["drive", "link de drive", "link drive"],
-        "youtube": ["youtube", "link youtube"], "fuente": ["fuente", "link de la fuente"], "id": ["id"],
+        "categoria": ["categoria"], "titulo": ["titulo"], "autor": ["autor"], "descripcion": ["descripcion"],
+        "drive": ["drive"], "fuente": ["fuente"], "editorial": ["editorial"],
     }),
     "salmos": ("data/salmos.json", {
-        "titulo": ["titulo", "nombre"], "referencia": ["referencia", "salmo"],
-        "autor": ["autor", "compositor"], "tiempo": ["tiempo", "tiempo liturgico"],
-        "descripcion": ["descripcion", "notas"], "drive": ["drive", "link de drive", "link drive"],
-        "youtube": ["youtube", "link youtube"], "fuente": ["fuente", "link de la fuente"], "id": ["id"],
+        "titulo": ["titulo"], "numero": ["no de salmo", "numero", "salmo"], "autor": ["autor"],
+        "rito": ["dia o rito", "rito"], "descripcion": ["descripcion"],
+        "drive": ["drive"], "youtube": ["youtube"], "fuente": ["fuente"],
     }),
 }
-CATS = {"cantorales": "Cantorales", "libros": "Libros", "documentos": "Documentos"}
+CATS = {"cantoral": "Cantorales", "cantorales": "Cantorales", "libro": "Libros", "libros": "Libros",
+        "documento": "Documentos", "documentos": "Documentos"}
+PARTES = {"comunion": "Comunión", "aclamacion": "Aclamación", "kyrie": "Kyrie", "gloria": "Gloria", "credo": "Credo",
+          "sanctus": "Sanctus", "agnus dei": "Agnus Dei", "entrada": "Entrada", "ofertorio": "Ofertorio", "salmo": "Salmo", "final": "Final"}
 
 def convertir(xlsx, raiz):
     wb = load_workbook(xlsx, data_only=True)
@@ -61,29 +63,31 @@ def convertir(xlsx, raiz):
             for campo, alias in campos.items():
                 for a in alias:
                     if a in cab: idx[campo] = cab.index(a); break
+            faltan = [c for c in campos if c not in idx]
+            if faltan: avisos.append(f"{clave}: no encontré las columnas {faltan}.")
             for n, fila in enumerate(filas[1:], start=2):
-                reg = {c: ("" if i >= len(fila) or fila[i] is None else str(fila[i]).strip()) for c, i in idx.items()}
+                reg = {c: limpia(fila[i]) if i < len(fila) else "" for c, i in idx.items()}
                 if not any(reg.values()): continue
                 t = reg.get("titulo", "")
-                if not t: avisos.append(f"{clave} fila {n}: sin título, se omitió."); continue
+                if not t: avisos.append(f"{clave} fila {n}: sin título, no aparece."); continue
                 if t.upper().startswith("EJEMPLO"): continue
-                if clave == "recursos":
-                    cat = CATS.get(norm(reg.get("categoria")))
-                    if not cat: avisos.append(f"recursos fila {n} («{t}»): categoría debe ser Cantorales, Libros o Documentos."); continue
-                    reg["categoria"] = cat
-                if clave == "salmos": reg["categoria"] = ""
-                base = reg.get("id") or slug(t + " " + reg.get("obra", ""))
+                if clave == "recursos" and reg.get("categoria"):
+                    cat = CATS.get(norm(reg["categoria"]))
+                    if not cat: avisos.append(f"recursos fila {n} («{t}»): categoría «{reg['categoria']}» no válida; queda sin clasificar."); reg["categoria"] = ""
+                    else: reg["categoria"] = cat
+                if clave == "partituras" and reg.get("parte"):
+                    reg["parte"] = PARTES.get(norm(reg["parte"]), reg["parte"])
+                base = slug(t)
                 i, nid = 2, base
                 while nid in ids: nid = f"{base}-{i}"; i += 1
-                ids.add(nid); reg["id"] = nid
+                ids.add(nid)
                 for k in ("drive", "drive_reducida", "drive_original"):
                     v = reg.get(k, "")
                     if v and "drive.google.com" not in v and "docs.google.com" not in v:
                         avisos.append(f"{clave} fila {n} («{t}»): el enlace de {k} no parece de Drive.")
-                for k in ("youtube",):
-                    v = reg.get(k, "")
-                    if v and "youtu" not in v: avisos.append(f"{clave} fila {n} («{t}»): el enlace de YouTube no parece válido.")
-                out.append({"id": reg.pop("id"), **reg})
+                if reg.get("youtube") and "youtu" not in reg["youtube"]:
+                    avisos.append(f"{clave} fila {n} («{t}»): el enlace de YouTube no parece válido.")
+                out.append({"id": nid, **reg})
         (raiz / destino).write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
         print(f"{destino}: {len(out)} elemento(s)")
     for a in avisos: print("AVISO:", a)
