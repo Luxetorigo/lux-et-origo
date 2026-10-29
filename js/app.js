@@ -162,7 +162,6 @@
       if (vals.length <= 8) {
         ["*"].concat(vals).forEach(function (v) {
           var b = el("button", "chip", v === "*" ? "Cualquiera" : fmt(v)); b.type = "button"; b.setAttribute("aria-pressed", v === "*");
-          if (v !== "*" && d.color) b.style.setProperty("--c", colorDe(v));
           b.addEventListener("click", function () {
             est[d.campo] = v; fila.querySelectorAll(".chip").forEach(function (x) { x.setAttribute("aria-pressed", x === b); }); cambio();
           });
@@ -244,32 +243,42 @@
       .catch(function () { falloCarga(grid); });
   }
 
-  /* ---------- Recursos y Salmos ---------- */
+  /* ---------- Recursos y Salmos (filas) ---------- */
   var lista = document.getElementById("lista");
   if (lista) {
-    var modo = lista.dataset.tipo, datos = [], estL = {};
+    var modo = lista.dataset.tipo, datos = [], estL = {}, numsSel = null;
     var lq = document.getElementById("q"), lcount = document.getElementById("count"), lbox = document.getElementById("filtros");
     var DIMSL = modo === "recursos"
-      ? [{ campo: "categoria", label: "Categoría", fijos: ["Cantorales", "Libros", "Documentos"], color: true }, { campo: "autor", label: "Autor" }]
-      : [{ campo: "numero", label: "Salmo", fmt: function (n) { return "Salmo " + n; } }, { campo: "rito", label: "Día o rito" }, { campo: "autor", label: "Autor" }];
+      ? [{ campo: "categoria", label: "Categoría", fijos: ["Cantorales", "Libros", "Documentos"] }, { campo: "autor", label: "Autor" }]
+      : [{ campo: "autor", label: "Autor" }];
 
-    var tarjeta = function (it, i) {
-      var c = el("article", "card");
+    /* «5, 6, 77» o rangos «20-25» -> conjunto de números; vacío o inválido = sin filtro */
+    function parseNums(s) {
+      var set = {}, hay = false;
+      (s || "").split(/[\s,;]+/).forEach(function (tok) {
+        if (!tok) return;
+        var m = tok.match(/^(\d+)-(\d+)$/);
+        if (m) { var a = +m[1], b = +m[2]; if (a > b) { var x = a; a = b; b = x; } if (b - a <= 200) { for (var n = a; n <= b; n++) set[n] = 1; hay = true; } }
+        else if (/^\d+$/.test(tok)) { set[+tok] = 1; hay = true; }
+      });
+      return hay ? set : null;
+    }
+
+    var fila = function (it, i) {
+      var c = el("a", "fila");
+      c.href = (modo === "recursos" ? "recurso.html" : "salmo.html") + "?id=" + encodeURIComponent(it.id);
       c.style.setProperty("--pc", colorDe(modo === "recursos" ? it.categoria : "salmos"));
-      c.style.transitionDelay = Math.min(i, 8) * 60 + "ms";
-      var etiqueta = modo === "recursos" ? it.categoria : (it.numero ? "Salmo " + it.numero : "");
-      if (etiqueta) c.appendChild(el("span", "tag", etiqueta));
-      c.appendChild(el("h3", "", it.titulo));
-      c.appendChild(el("p", "who", "Autor: " + (it.autor || ANON)));
-      if (modo === "recursos") c.appendChild(el("p", "who", "Editorial: " + (it.editorial || ND)));
-      else c.appendChild(el("p", "who", "Día o rito: " + (it.rito || "No específico")));
-      c.appendChild(el("p", "nota", it.descripcion || "Aún no hay descripción."));
-      var act = el("div", "actions");
-      if (it.drive) { enlace(act, "ver", "Ver", "", driveVer(it.drive)); enlace(act, "", "Descargar", "", driveDesc(it.drive)); }
-      else enlace(act, "", "", "Drive: " + ND, "");
-      if (modo === "salmos") enlace(act, "", "▶ Escuchar", "YouTube: " + ND, it.youtube);
-      enlace(act, "", "Fuente", "Fuente: " + ND, it.fuente);
-      c.appendChild(act);
+      c.style.transitionDelay = Math.min(i, 8) * 50 + "ms";
+      c.appendChild(el("span", "tag", modo === "recursos" ? (it.categoria || "Recurso") : (it.numero ? "Salmo " + it.numero : "Salmo")));
+      var mid = el("div", "mid"); mid.appendChild(el("h3", "", it.titulo));
+      var extra = modo === "recursos" ? it.editorial : it.rito;
+      mid.appendChild(el("p", "who", [it.autor || ANON, extra].filter(Boolean).join(" · ")));
+      c.appendChild(mid);
+      var b = el("div", "badges");
+      (modo === "recursos" ? [["drive", "Archivo"], ["fuente", "Fuente"]] : [["drive", "Partitura"], ["youtube", "Audio"], ["fuente", "Fuente"]])
+        .forEach(function (x) { b.appendChild(el("span", "badge" + (it[x[0]] ? "" : " no"), x[1])); });
+      c.appendChild(b);
+      c.appendChild(el("span", "go", "Abrir →"));
       setTimeout(function () { c.classList.add("in"); }, 30);
       return c;
     };
@@ -277,9 +286,11 @@
     var pintaLista = function () {
       var term = norm(lq.value);
       var res = datos.filter(function (it) {
+        if (numsSel && !numsSel[parseInt(it.numero, 10)]) return false;
         return pasa(it, estL) && (!term || norm([it.titulo, it.autor || ANON, it.descripcion, it.categoria, it.rito, it.editorial, it.numero ? "salmo " + it.numero : ""].join(" ")).indexOf(term) !== -1);
       });
-      ordena(res, 1);
+      if (modo === "salmos") res.sort(function (a, b) { return (parseInt(a.numero, 10) || 999) - (parseInt(b.numero, 10) || 999) || a.titulo.localeCompare(b.titulo, "es"); });
+      else ordena(res, 1);
       lista.textContent = ""; lcount.textContent = "";
       if (!datos.length) {
         lista.appendChild(vacioMsg(modo === "recursos" ? "Estamos preparando los primeros recursos." : "Estamos preparando los primeros salmos."));
@@ -287,56 +298,94 @@
       }
       if (!res.length) { lista.appendChild(el("p", "empty", "No hay resultados con ese criterio.")); return; }
       lcount.textContent = res.length + (res.length === 1 ? " elemento" : " elementos");
-      res.forEach(function (it, i) { lista.appendChild(tarjeta(it, i)); });
+      res.forEach(function (it, i) { lista.appendChild(fila(it, i)); });
     };
 
     lq.addEventListener("input", pintaLista);
     cargar(lista.dataset.src).then(function (d) {
       datos = d;
       estL = filtros(lbox, datos, DIMSL, pintaLista);
+      if (modo === "salmos") {
+        var f = el("div", "fil"); f.appendChild(el("span", "lbl", "Salmo:"));
+        var inp = el("input", "numsalmo"); inp.type = "text"; inp.inputMode = "numeric"; inp.autocomplete = "off";
+        inp.placeholder = "Escribe números: 5, 6, 77 o 20-25"; inp.setAttribute("aria-label", "Números de salmo");
+        inp.addEventListener("input", function () { numsSel = parseNums(inp.value); pintaLista(); });
+        f.appendChild(inp); lbox.appendChild(f);
+      }
       pintaLista();
     }).catch(function () { falloCarga(lista); });
   }
 
-  /* ---------- Página de una partitura ---------- */
+  /* ---------- Página de detalle (partitura, recurso o salmo) ---------- */
   var det = document.getElementById("det");
   if (det) {
+    var tipoDet = det.dataset.tipo || "partituras";
+    var CFG = {
+      partituras: { src: "data/partituras.json", volver: ["← Todas las partituras", "index.html#partituras"] },
+      recursos:   { src: "data/recursos.json",   volver: ["← Todos los recursos", "recursos.html"] },
+      salmos:     { src: "data/salmos.json",     volver: ["← Todos los salmos", "salmos.html"] }
+    }[tipoDet];
     var id = new URLSearchParams(location.search).get("id");
-    cargar("data/partituras.json").then(function (d) {
+    cargar(CFG.src).then(function (d) {
       var it = d.filter(function (x) { return x.id === id; })[0];
       det.textContent = "";
-      var volver = el("a", "volver", "← Todas las partituras"); volver.href = "index.html#partituras";
+      var volver = el("a", "volver", CFG.volver[0]); volver.href = CFG.volver[1];
       det.appendChild(volver);
-      if (!it) { det.appendChild(el("p", "empty", "No encontré esa partitura.")); return; }
+      if (!it) { det.appendChild(el("p", "empty", "No encontré esta página.")); return; }
 
       document.title = it.titulo + " · Lux et Origo";
-      det.style.setProperty("--pc", colorDe(it.parte || it.tipo));
-      if (it.parte || it.tipo) det.appendChild(el("span", "tag", it.parte || it.tipo));
+      var etiqueta, quien, extra = [], bt = [], opciones = [], yt = "";
+      if (tipoDet === "partituras") {
+        det.style.setProperty("--pc", colorDe(it.parte, it.tipo));
+        etiqueta = it.parte || it.tipo;
+        quien = [it.parte ? it.tipo : "", it.autor || ANON, it.tiempo ? "Tiempo: " + it.tiempo : ""].filter(Boolean).join(" · ");
+        extra.push(["Condición: ", (it.condicion || "No hay dominio específico") + (it.autorizada_por ? " — autorizada por " + it.autorizada_por : "")]);
+        bt = [["⬇ Descargar partitura", it.drive_reducida && driveDesc(it.drive_reducida), true, "Partitura: " + ND],
+              ["⬇ Original (Drive)", it.drive_original && driveVer(it.drive_original), false, "Original: " + ND],
+              ["▶ Escuchar en YouTube", it.youtube, false, "YouTube: " + ND],
+              ["Fuente", it.fuente, false, "Fuente: " + ND]];
+        if (it.drive_reducida) opciones.push(["Reducida", it.drive_reducida]);
+        if (it.drive_original) opciones.push(["Original", it.drive_original]);
+        yt = it.youtube;
+      } else if (tipoDet === "recursos") {
+        det.style.setProperty("--pc", colorDe(it.categoria));
+        etiqueta = it.categoria || "Recurso";
+        quien = it.autor || ANON;
+        extra.push(["Editorial: ", it.editorial || ND]);
+        bt = [["⬇ Descargar", it.drive && driveDesc(it.drive), true, "Archivo: " + ND],
+              ["Fuente", it.fuente, false, "Fuente: " + ND]];
+        if (it.drive) opciones.push(["Documento", it.drive]);
+      } else {
+        det.style.setProperty("--pc", colorDe("salmos"));
+        etiqueta = it.numero ? "Salmo " + it.numero : "Salmo";
+        quien = it.autor || ANON;
+        extra.push(["Día o rito: ", it.rito || "No específico"]);
+        bt = [["⬇ Descargar partitura", it.drive && driveDesc(it.drive), true, "Partitura: " + ND],
+              ["▶ Escuchar en YouTube", it.youtube, false, "YouTube: " + ND],
+              ["Fuente", it.fuente, false, "Fuente: " + ND]];
+        if (it.drive) opciones.push(["Partitura", it.drive]);
+        yt = it.youtube;
+      }
+      if (etiqueta) det.appendChild(el("span", "tag", etiqueta));
       det.appendChild(el("h1", "", it.titulo));
-      det.appendChild(el("p", "who", [it.parte ? it.tipo : "", it.autor || ANON, it.tiempo ? "Tiempo: " + it.tiempo : ""].filter(Boolean).join(" · ")));
+      det.appendChild(el("p", "who", quien));
       det.appendChild(el("p", "nota", it.descripcion || "Aún no hay descripción."));
-      var cp = el("p", "cond"); cp.appendChild(el("strong", "", "Condición: "));
-      cp.appendChild(document.createTextNode((it.condicion || "No hay dominio específico") + (it.autorizada_por ? " — autorizada por " + it.autorizada_por : "")));
-      det.appendChild(cp);
+      extra.forEach(function (x) {
+        var p = el("p", "cond"); p.appendChild(el("strong", "", x[0])); p.appendChild(document.createTextNode(x[1])); det.appendChild(p);
+      });
 
       var bots = el("div", "botones");
-      function boton(txt, href, primario) {
-        var a = el("a", "bt" + (primario ? " p" : ""), txt);
-        a.href = href; a.target = "_blank"; a.rel = "noopener"; return a;
-      }
-      function noDisp(txt) { var s = el("span", "bt no", txt); return s; }
-      bots.appendChild(it.drive_reducida ? boton("⬇ Descargar partitura", driveDesc(it.drive_reducida), true) : noDisp("Partitura: " + ND));
-      bots.appendChild(it.drive_original ? boton("⬇ Original (Drive)", driveVer(it.drive_original)) : noDisp("Original: " + ND));
-      bots.appendChild(it.youtube ? boton("▶ Escuchar en YouTube", it.youtube) : noDisp("YouTube: " + ND));
-      bots.appendChild(it.fuente ? boton("Fuente", it.fuente) : noDisp("Fuente: " + ND));
+      bt.forEach(function (b) {
+        var a;
+        if (b[1]) { a = el("a", "bt" + (b[2] ? " p" : ""), b[0]); a.href = b[1]; a.target = "_blank"; a.rel = "noopener"; }
+        else a = el("span", "bt no", b[3]);
+        bots.appendChild(a);
+      });
       det.appendChild(bots);
 
-      /* Vista de la partitura */
+      /* Vista previa */
       det.appendChild(el("h2", "", "Vista"));
       var tabs = el("div", "vtabs"), vista = el("div");
-      var opciones = [];
-      if (it.drive_reducida) opciones.push(["Reducida", it.drive_reducida]);
-      if (it.drive_original) opciones.push(["Original", it.drive_original]);
       function pinta(o) {
         vista.textContent = "";
         var src = drivePrev(o[1]);
@@ -347,7 +396,7 @@
         var l = el("a", "", "abrir"); l.href = driveVer(o[1]); l.target = "_blank"; l.rel = "noopener"; p.appendChild(l);
         vista.appendChild(p);
       }
-      if (!opciones.length) vista.appendChild(el("div", "pendiente", "Vista: " + ND + ". Esta partitura aún no tiene archivo."));
+      if (!opciones.length) vista.appendChild(el("div", "pendiente", "Vista: " + ND + ". Aún no hay archivo."));
       else {
         if (opciones.length > 1) {
           opciones.forEach(function (o, i) {
@@ -365,7 +414,7 @@
       det.appendChild(vista);
 
       /* Audio */
-      var yid = ytId(it.youtube);
+      var yid = ytId(yt);
       if (yid) {
         det.appendChild(el("h2", "", "Escúchala"));
         var w = el("div", "yt"), fr = el("iframe");

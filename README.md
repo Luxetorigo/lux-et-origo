@@ -14,8 +14,8 @@ Sitio estático (HTML + CSS + JS). Sin base de datos. Se publica gratis con GitH
 
 ## Secciones
 - **Partituras** (`index.html`): menú con búsqueda, filtros (Autor, Tipo, Parte, Tiempo) y orden A→Z / Z→A. Cada partitura tiene su página `partitura.html?id=...` con vista del PDF, descarga, original, YouTube, fuente y condición.
-- **Recursos** (`recursos.html`): Cantorales, Libros y Documentos.
-- **Salmos** (`salmos.html`): por número, día o rito.
+- **Recursos** (`recursos.html`): Cantorales, Libros y Documentos, en filas; cada una abre su página con vista previa (`recurso.html?id=...`).
+- **Salmos** (`salmos.html`): filas ordenadas por número; se filtran escribiendo números («5, 6, 77» o «20-25») y por autor. Cada una abre su página con vista previa (`salmo.html?id=...`).
 - **Sobre nosotros** y **Transparencia** (`transparencia.html`, con el PDF en `docs/`).
 
 ## Colores, correo y redes

@@ -216,3 +216,24 @@ blockquote cite{display:block;font:normal .85rem var(--sans);color:var(--muted);
 .filtros select{background:var(--bg2);color:var(--text);border:1px solid var(--line);border-radius:999px;padding:.45rem 1rem;font:inherit;font-size:.92rem;letter-spacing:0;text-transform:none;min-width:9rem}
 .filtros select:focus{border-color:var(--acc);outline:none}
 .card .nota{color:var(--text)}
+
+/* ===== Filtros en color del tema + filas ===== */
+.chip{--c:var(--acc)!important;border-color:var(--acc)}
+.chip:hover{border-color:var(--acc2)}
+.chip[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:var(--on-acc);text-shadow:none;font-weight:600}
+.numsalmo{font:inherit;font-size:.9rem;padding:.4rem 1rem;border-radius:999px;background:var(--bg2);color:var(--text);border:1px solid var(--acc);min-width:min(20rem,100%)}
+.numsalmo:focus{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 30%,transparent)}
+.filas{display:flex;flex-direction:column;gap:.8rem}
+a.fila{--pc:var(--acc);display:flex;align-items:center;gap:1rem;width:100%;padding:1rem 1.2rem;border:1px solid var(--line);border-left:6px solid var(--pc);border-radius:12px;background:var(--bg2);text-decoration:none;color:var(--text);opacity:0;transform:translateY(14px);transition:opacity .5s,transform .3s,box-shadow .25s,border-color .25s}
+a.fila.in{opacity:1;transform:none}
+a.fila:hover{border-color:var(--pc);box-shadow:0 10px 28px -14px var(--pc);transform:translateX(5px)}
+.fila .tag{flex:none;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#fff;background:var(--pc);padding:.2rem .75rem;border-radius:999px;text-shadow:0 1px 2px #0005;white-space:nowrap}
+.fila .mid{flex:1;min-width:0}
+.fila h3{font:600 1.3rem/1.2 var(--serif);margin:0}
+.fila .who{color:var(--muted);font-size:.9rem;margin:.1rem 0 0}
+.fila .badges{margin:0;padding:0;flex:none}
+.fila .go{flex:none;font-size:.85rem;font-weight:600;color:var(--pc);margin:0;white-space:nowrap}
+.fila:hover .go{text-decoration:underline}
+@media (max-width:680px){a.fila{flex-wrap:wrap}.fila .mid{flex-basis:60%}.fila .badges{order:5;width:100%}}
+.fila .tag{min-width:6.2rem;text-align:center}
+.numsalmo{min-width:min(17rem,100%)}
