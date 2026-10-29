@@ -3,14 +3,31 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Lux et Origo · Canto litúrgico</title>
-  <meta name="description" content="Análisis y partituras reducidas de canto litúrgico, con fines pastorales y sin lucro.">
+  <meta name="description" content="Partituras reducidas y recursos de canto litúrgico y sacro para cantar en comunidad: Misa, salmos, cantorales y documentos. Gratis, con fines pastorales y sin lucro.">
+  <meta name="theme-color" content="#0d0b0e">
+  <link rel="canonical" href="https://luxetorigo.github.io/lux-et-origo/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Lux et Origo">
+  <meta property="og:locale" content="es_MX">
+  <meta property="og:title" content="Lux et Origo · Partituras de canto litúrgico y sacro">
+  <meta property="og:description" content="Partituras reducidas y recursos de canto litúrgico y sacro para cantar en comunidad: Misa, salmos, cantorales y documentos. Gratis, con fines pastorales y sin lucro.">
+  <meta property="og:url" content="https://luxetorigo.github.io/lux-et-origo/">
+  <meta property="og:image" content="https://luxetorigo.github.io/lux-et-origo/img/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Lux et Origo: partituras de canto litúrgico y sacro">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Lux et Origo · Partituras de canto litúrgico y sacro">
+  <meta name="twitter:description" content="Partituras reducidas y recursos de canto litúrgico y sacro para cantar en comunidad: Misa, salmos, cantorales y documentos. Gratis, con fines pastorales y sin lucro.">
+  <meta name="twitter:image" content="https://luxetorigo.github.io/lux-et-origo/img/og-image.jpg">
+  <title>Lux et Origo · Partituras de canto litúrgico y sacro</title>
     <link rel="icon" type="image/png" href="img/favicon.png">
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Lux et Origo","url":"https://luxetorigo.github.io/lux-et-origo/","inLanguage":"es","description":"Partituras de canto litúrgico y sacro para cantar en comunidad."}</script>
 </head>
 <body>
   <header class="top">
@@ -32,7 +49,30 @@
       <p class="eyebrow">Canto litúrgico</p>
       <h1>Lux et Origo</h1>
       <p class="frase" id="frase" aria-live="off"><span class="la">Kyrie, eleison</span><span class="es">Señor, ten piedad</span></p>
-      <a class="btn" href="#partituras">Elegir una partitura</a>
+      <div class="cta">
+        <a class="btn" href="#partituras">Elegir una partitura</a>
+        <a class="btn sec" href="recursos.html">Explorar recursos</a>
+        <a class="enlace" href="#nosotros">¿Quiénes somos?</a>
+      </div>
+      <div class="neumas hero-neumas" aria-hidden="true"></div>
+    </section>
+
+
+    <section class="wrap explora" aria-label="Explorar el sitio">
+      <div class="tiles">
+        <a class="tile" href="#partituras">
+          <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M18 33V10l18-4v22M18 18l18-4"/><ellipse cx="13" cy="33" rx="6" ry="4.5"/><ellipse cx="31" cy="28" rx="6" ry="4.5"/></svg>
+          <h3>Partituras</h3><p>Versiones reducidas para cantar en comunidad.</p><span class="n" data-n="partituras"></span>
+        </a>
+        <a class="tile" href="recursos.html">
+          <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 10c6-3 11-3 16 1v28c-5-4-10-4-16-1zM40 10c-6-3-11-3-16 1v28c5-4 10-4 16-1z"/></svg>
+          <h3>Recursos</h3><p>Cantorales, libros y documentos de la Iglesia.</p><span class="n" data-n="recursos"></span>
+        </a>
+        <a class="tile" href="salmos.html">
+          <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 6v36M14 16h20M10 12c0 14 4 22 14 30 10-8 14-16 14-30"/></svg>
+          <h3>Salmos</h3><p>Para cantar la Palabra, por número.</p><span class="n" data-n="salmos"></span>
+        </a>
+      </div>
     </section>
 
     <section id="partituras" class="wrap">
@@ -52,7 +92,10 @@
 
       <p id="count" class="muted small" aria-live="polite"></p>
       <div id="grid" class="grid"></div>
+      <noscript><p class="empty">Este sitio necesita JavaScript para mostrar el contenido. Actívalo en tu navegador.</p></noscript>
     </section>
+
+    <div class="neumas sep" aria-hidden="true"></div>
 
     <section id="nosotros" class="wrap narrow">
       <h2>Sobre nosotros</h2>

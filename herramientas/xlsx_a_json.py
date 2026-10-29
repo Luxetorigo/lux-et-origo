@@ -47,6 +47,24 @@ HOJAS = {
     }),
 }
 
+BASE = "https://luxetorigo.github.io/lux-et-origo/"
+
+def generar_sitemap(raiz):
+    """sitemap.xml con las páginas fijas y la página de cada partitura, recurso y salmo."""
+    from datetime import date
+    hoy = date.today().isoformat()
+    urls = ["", "recursos.html", "salmos.html", "transparencia.html"]
+    for archivo, pagina in (("partituras", "partitura.html"), ("recursos", "recurso.html"), ("salmos", "salmo.html")):
+        try:
+            for it in json.loads((raiz / "data" / f"{archivo}.json").read_text(encoding="utf-8")):
+                urls.append(f"{pagina}?id={it['id']}")
+        except FileNotFoundError:
+            pass
+    cuerpo = "".join(f"  <url><loc>{BASE}{u}</loc><lastmod>{hoy}</lastmod></url>\n" for u in urls)
+    (raiz / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + cuerpo + "</urlset>\n", encoding="utf-8")
+    (raiz / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {BASE}sitemap.xml\n", encoding="utf-8")
+    print(f"sitemap.xml: {len(urls)} dirección(es)")
+
 def categoria(txt):
     n = norm(txt)
     for pref, nombre in (("cantoral", "Cantorales"), ("libro", "Libros"), ("documento", "Documentos")):
@@ -93,6 +111,7 @@ def convertir(xlsx, raiz):
                 out.append({"id": reg.pop("id"), **reg})
         (raiz / destino).write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
         print(f"{destino}: {len(out)} elemento(s)")
+    generar_sitemap(raiz)
     for a in avisos: print("AVISO:", a)
 
 if __name__ == "__main__":

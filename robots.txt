@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://luxetorigo.github.io/lux-et-origo/sitemap.xml

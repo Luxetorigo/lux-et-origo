@@ -129,12 +129,35 @@
     return "hsl(" + h + ",55%,52%)";
   }
   function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+
+  /* Miniatura: primera página del PDF de Drive; si falla o no hay archivo, pentagrama decorativo con la inicial */
+  function miniatura(url, titulo, cls) {
+    var d = el("div", cls || "thumb"), id = driveId(url || "");
+    var ini = el("span", "ini", (titulo || "?").charAt(0).toUpperCase()); ini.setAttribute("aria-hidden", "true");
+    d.appendChild(ini);
+    if (id) {
+      var img = new Image(); img.alt = ""; img.loading = "lazy"; img.decoding = "async"; img.referrerPolicy = "no-referrer";
+      img.onload = function () { d.classList.add("ok"); };
+      img.onerror = function () { img.remove(); };
+      img.src = "https://drive.google.com/thumbnail?id=" + id + "&sz=w480";
+      d.appendChild(img);
+    }
+    return d;
+  }
+  /* Estado de carga: esqueletos mientras llegan los datos */
+  function skeleton(cont, n, cls) {
+    cont.textContent = "";
+    for (var i = 0; i < n; i++) { var s = el("div", "sk " + cls); s.setAttribute("aria-hidden", "true"); cont.appendChild(s); }
+  }
   function cargar(src) {
     return fetch(src, { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
   }
   function falloCarga(cont) {
     cont.textContent = "";
-    cont.appendChild(el("p", "empty", "No se pudo cargar la información. Revisa que las carpetas css, js y data estén subidas junto a index.html."));
+    var p = el("div", "empty");
+    p.appendChild(el("p", "", "No se pudo cargar el contenido. Revisa tu conexión (o que las carpetas css, js y data estén junto a index.html)."));
+    var b = el("button", "chip", "Reintentar"); b.type = "button"; b.addEventListener("click", function () { location.reload(); });
+    p.appendChild(b); cont.appendChild(p);
   }
   function vacioMsg(txt) {
     var v = el("div", "vacio"); v.appendChild(el("span", "mk")); v.appendChild(el("strong", "", "Pronto, muy pronto"));
@@ -202,8 +225,7 @@
       c.href = "partitura.html?id=" + encodeURIComponent(it.id);
       c.style.setProperty("--pc", colorDe(it.parte || it.tipo));
       c.style.transitionDelay = Math.min(i, 8) * 60 + "ms";
-      var ini = el("span", "ini", (it.titulo || "?").charAt(0).toUpperCase()); ini.setAttribute("aria-hidden", "true");
-      c.appendChild(ini);
+      c.appendChild(miniatura(it.drive_reducida || it.drive_original, it.titulo));
       if (it.parte || it.tipo) c.appendChild(el("span", "tag", it.parte || it.tipo));
       c.appendChild(el("h3", "", it.titulo));
       c.appendChild(el("p", "who", [it.parte ? it.tipo : "", it.autor || ANON].filter(Boolean).join(" · ")));
@@ -239,6 +261,7 @@
     zab.addEventListener("click", function () { setOrden("za"); });
     q.addEventListener("input", render);
 
+    skeleton(grid, 3, "sk-card"); count.textContent = "Cargando partituras…";
     cargar("data/partituras.json").then(function (d) { items = d; est = filtros(fbox, items, DIMS, render); render(); })
       .catch(function () { falloCarga(grid); });
   }
@@ -269,6 +292,7 @@
       c.href = (modo === "recursos" ? "recurso.html" : "salmo.html") + "?id=" + encodeURIComponent(it.id);
       c.style.setProperty("--pc", colorDe(modo === "recursos" ? it.categoria : "salmos"));
       c.style.transitionDelay = Math.min(i, 8) * 50 + "ms";
+      c.appendChild(miniatura(it.drive, it.titulo, "fthumb"));
       c.appendChild(el("span", "tag", modo === "recursos" ? (it.categoria || "Recurso") : (it.numero ? "Salmo " + it.numero : "Salmo")));
       var mid = el("div", "mid"); mid.appendChild(el("h3", "", it.titulo));
       var extra = modo === "recursos" ? it.editorial : it.rito;
@@ -302,6 +326,7 @@
     };
 
     lq.addEventListener("input", pintaLista);
+    skeleton(lista, 3, "sk-fila"); lcount.textContent = "Cargando…";
     cargar(lista.dataset.src).then(function (d) {
       datos = d;
       estL = filtros(lbox, datos, DIMSL, pintaLista);
@@ -423,5 +448,16 @@
         w.appendChild(fr); det.appendChild(w);
       }
     }).catch(function () { falloCarga(det); });
+  }
+
+  /* ---------- Contadores de la portada ---------- */
+  var tilesBox = document.querySelector(".tiles");
+  if (tilesBox) {
+    [["partituras", "partitura"], ["recursos", "recurso"], ["salmos", "salmo"]].forEach(function (x) {
+      var n = tilesBox.querySelector('[data-n="' + x[0] + '"]');
+      cargar("data/" + x[0] + ".json").then(function (d) {
+        n.textContent = d.length ? d.length + " " + (d.length === 1 ? x[1] : x[0]) : "Muy pronto";
+      }).catch(function () { n.textContent = ""; });
+    });
   }
 })();
