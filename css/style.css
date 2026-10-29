@@ -209,3 +209,10 @@ blockquote cite{display:block;font:normal .85rem var(--sans);color:var(--muted);
 .det .nota{margin:.8rem 0 0}
 .bt.no{cursor:default}
 .actions .off{font-size:.8rem}
+
+/* Filtros desplegables */
+.filtros{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:.9rem}
+.filtros label{display:flex;flex-direction:column;gap:.2rem;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.filtros select{background:var(--bg2);color:var(--text);border:1px solid var(--line);border-radius:999px;padding:.45rem 1rem;font:inherit;font-size:.92rem;letter-spacing:0;text-transform:none;min-width:9rem}
+.filtros select:focus{border-color:var(--acc);outline:none}
+.card .nota{color:var(--text)}

@@ -191,7 +191,7 @@
     var q = document.getElementById("q"), fbox = document.getElementById("filtros"), count = document.getElementById("count"),
         azb = document.getElementById("azb"), zab = document.getElementById("zab");
     var items = [], est = {}, orden = "az";
-    var DIMS = [{ campo: "compositor", label: "Autor" }, { campo: "tipo", label: "Tipo", color: true },
+    var DIMS = [{ campo: "autor", label: "Autor" }, { campo: "tipo", label: "Tipo", color: true },
                 { campo: "parte", label: "Parte", color: true }, { campo: "tiempo", label: "Tiempo" }];
 
     var io = ("IntersectionObserver" in window) ? new IntersectionObserver(function (es) {
@@ -207,7 +207,7 @@
       c.appendChild(ini);
       if (it.parte || it.tipo) c.appendChild(el("span", "tag", it.parte || it.tipo));
       c.appendChild(el("h3", "", it.titulo));
-      c.appendChild(el("p", "who", [it.parte ? it.tipo : "", it.compositor || ANON].filter(Boolean).join(" · ")));
+      c.appendChild(el("p", "who", [it.parte ? it.tipo : "", it.autor || ANON].filter(Boolean).join(" · ")));
       var b = el("div", "badges");
       [["drive_reducida", "Partitura"], ["drive_original", "Original"], ["youtube", "Audio"]].forEach(function (x) {
         b.appendChild(el("span", "badge" + (it[x[0]] ? "" : " no"), x[1]));
@@ -221,7 +221,7 @@
     var render = function () {
       var term = norm(q.value);
       var list = items.filter(function (it) {
-        var hay = norm([it.titulo, it.tipo, it.compositor || ANON, it.parte, it.tiempo, it.descripcion].join(" "));
+        var hay = norm([it.titulo, it.tipo, it.autor || ANON, it.parte, it.tiempo, it.descripcion].join(" "));
         return pasa(it, est) && (!term || hay.indexOf(term) !== -1);
       });
       ordena(list, orden === "az" ? 1 : -1);
@@ -313,7 +313,7 @@
       det.style.setProperty("--pc", colorDe(it.parte || it.tipo));
       if (it.parte || it.tipo) det.appendChild(el("span", "tag", it.parte || it.tipo));
       det.appendChild(el("h1", "", it.titulo));
-      det.appendChild(el("p", "who", [it.parte ? it.tipo : "", it.compositor || ANON, it.tiempo].filter(Boolean).join(" · ")));
+      det.appendChild(el("p", "who", [it.parte ? it.tipo : "", it.autor || ANON, it.tiempo ? "Tiempo: " + it.tiempo : ""].filter(Boolean).join(" · ")));
       det.appendChild(el("p", "nota", it.descripcion || "Aún no hay descripción."));
       var cp = el("p", "cond"); cp.appendChild(el("strong", "", "Condición: "));
       cp.appendChild(document.createTextNode((it.condicion || "No hay dominio específico") + (it.autorizada_por ? " — autorizada por " + it.autorizada_por : "")));
