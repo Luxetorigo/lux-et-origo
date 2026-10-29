@@ -1,5 +1,8 @@
 // Edita aquí los datos del sitio. No necesitas tocar nada más para cambiarlos.
 window.SITE = {
+  // Versión del sitio (se muestra en el pie de página). No es la versión de la carta de transparencia.
+  version: "1.1",
+
   // Cuando tengas el correo propio del proyecto, cámbialo aquí (se actualiza en todo el sitio).
   email: "Adri.torim6@gmail.com",
 

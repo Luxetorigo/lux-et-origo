@@ -60,6 +60,28 @@
     ctrl.appendChild(m);
   }
 
+  /* ---------- Versión del sitio ---------- */
+  var pieF = document.querySelector("footer");
+  if (pieF && S.version) { var pv = el("p", "small muted ver", "Versión del sitio " + S.version); pieF.appendChild(pv); }
+
+  /* ---------- Botón «Filtrar por» junto a la búsqueda ---------- */
+  (function () {
+    var qi = document.getElementById("q"), fb = document.getElementById("filtros");
+    if (!qi || !fb) return;
+    var fila = el("div", "buscar"); qi.parentNode.insertBefore(fila, qi); fila.appendChild(qi);
+    var btn = el("button", "chip filtrar", "Filtrar por ▾"); btn.type = "button";
+    btn.setAttribute("aria-expanded", "false"); btn.setAttribute("aria-controls", "panelfil");
+    fila.appendChild(btn);
+    var panel = el("div", "panelfil"); panel.id = "panelfil"; panel.hidden = true;
+    fila.parentNode.insertBefore(panel, fila.nextSibling);
+    panel.appendChild(fb);
+    var ord = document.querySelector(".orden"); if (ord) panel.appendChild(ord);
+    btn.addEventListener("click", function () {
+      var ab = panel.hidden; panel.hidden = !ab;
+      btn.setAttribute("aria-expanded", ab ? "true" : "false"); btn.textContent = ab ? "Filtrar por ▴" : "Filtrar por ▾";
+    });
+  })();
+
   /* ---------- Correo y redes ---------- */
   document.querySelectorAll(".mail").forEach(function (a) {
     a.textContent = S.email; a.href = "mailto:" + S.email;
@@ -116,20 +138,9 @@
   }
 
   var ND = "No disponible", ANON = "Anónimo";
-  var COLORES = {
-    "kyrie": "#8b5cc9", "gloria": "#d9a93a", "credo": "#3f86d6", "sanctus": "#d2483f", "agnus dei": "#3fa37a",
-    "comunion": "#d65a8a", "entrada": "#2fa5a5", "ofertorio": "#cf7a35", "salmo": "#7a6fd6", "gradual": "#7a6fd6",
-    "aleluya": "#e0b23a", "cantorales": "#8b5cc9", "libros": "#cf7a35", "documentos": "#3f86d6", "salmos": "#2fa5a5",
-    "final": "#7a9a3a", "aclamacion": "#e0b23a", "padre nuestro": "#4a8fc0", "misa": "#8b5cc9", "canto": "#d9a93a"
-  };
   function norm(s) { return (s || "").toString().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""); }
-  function colorDe(p) {
-    var k = norm(p);
-    if (!k) return "var(--acc)";
-    if (COLORES[k]) return COLORES[k];
-    var h = 0; for (var i = 0; i < k.length; i++) h = (h * 31 + k.charCodeAt(i)) % 360;
-    return "hsl(" + h + ",55%,52%)";
-  }
+  /* Un solo color para todo el sitio: el del tema litúrgico activo */
+  function colorDe() { return "var(--acc)"; }
   function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
 
   /* Miniatura: primera página del PDF de Drive; si falla o no hay archivo, pentagrama decorativo con la inicial */

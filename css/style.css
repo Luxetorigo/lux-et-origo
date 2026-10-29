@@ -270,14 +270,24 @@ a.fila:hover{border-color:var(--pc);box-shadow:0 10px 28px -14px var(--pc);trans
 @media (prefers-reduced-motion:reduce){.sk{animation:none}}
 .hero-neumas{opacity:.38}
 
-/* ===== Marco ovalado (Sobre nosotros) ===== */
-.oval{width:176px;height:224px;margin:0 auto 1.6rem;display:grid;place-items:center;border-radius:50%;
-  border:2px solid var(--acc2);box-shadow:0 0 0 6px var(--bg),0 0 0 8px color-mix(in srgb,var(--acc2) 55%,transparent),0 0 40px -6px var(--acc);
-  background:radial-gradient(ellipse at 50% 40%,color-mix(in srgb,var(--acc) 22%,var(--bg2)),var(--bg2) 75%)}
-.oval .mk{--h:120px;margin:0;color:var(--acc2);filter:drop-shadow(0 0 14px color-mix(in srgb,var(--acc) 60%,transparent))}
+/* ===== Sobre nosotros: nombre + logo ===== */
+.marca-nos{display:flex;align-items:center;gap:.9rem;margin:0 0 1.2rem;font:700 clamp(1.5rem,5vw,2.1rem)/1.2 "Cinzel",var(--serif);letter-spacing:.09em;color:var(--acc2)}
+.marca-nos .mk{--h:2.6rem;margin:0;color:var(--acc2)}
 /* ===== Cabecera con adornos en Recursos y Salmos ===== */
 .hero.mini{padding:3.2rem 1.25rem 4.2rem}
 .hero.mini .hero-mk{--h:3.6rem;margin-bottom:.8rem;animation:none}
 .hero.mini h1{font-size:clamp(1.8rem,6vw,3.2rem);margin:0}
 .hero.mini .hero-neumas{height:70px}
 .rep{font-size:.9rem;padding:.4rem 1.1rem;margin-top:.5rem}
+
+/* ===== Búsqueda + «Filtrar por» ===== */
+.buscar{display:flex;gap:.6rem;align-items:center}
+.buscar input[type=search]{flex:1;min-width:0}
+.chip.filtrar{flex:none;padding:.65rem 1.3rem;font-size:.95rem;font-weight:600;white-space:nowrap}
+.panelfil{margin-top:.8rem;padding:.4rem 1.1rem 1.1rem;border:1px solid var(--line);border-radius:14px;background:var(--bg2)}
+.panelfil[hidden]{display:none}
+.panelfil .filtros{margin-top:0;display:block}
+.panelfil .orden{margin-top:.8rem}
+.volver{font-size:1.15rem;font-weight:600;padding:.7rem 1.5rem;border:1px solid var(--acc);border-radius:999px;background:var(--bg2);transition:background .2s,color .2s}
+.volver:hover{background:var(--acc);color:var(--on-acc)}
+.ver{margin-top:.2rem}
