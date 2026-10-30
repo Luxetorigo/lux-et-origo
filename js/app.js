@@ -62,7 +62,7 @@
 
   /* ---------- Versión del sitio ---------- */
   var pieF = document.querySelector("footer");
-  if (pieF && S.version) { var pv = el("p", "small muted ver", "Versión del sitio " + S.version); pieF.appendChild(pv); }
+  if (pieF && S.version) { var pv = el("p", "small muted ver", "Versión " + S.version); pieF.appendChild(pv); }
 
   /* ---------- Botón «Filtrar por» junto a la búsqueda ---------- */
   (function () {

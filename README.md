@@ -12,7 +12,7 @@ Sitio estático (HTML + CSS + JS). Sin base de datos. Se publica gratis con GitH
 
 **Drive:** cada PDF debe estar compartido como «Cualquier persona con el enlace» (Lector), si no la vista y la descarga no funcionan para los visitantes.
 
-**Versión del sitio:** 1.1 (`version` en `js/config.js`; se muestra en el pie). No es la versión de la carta de transparencia.
+**Versión:** 1.1 (`version` en `js/config.js`; se muestra en el pie). No es la versión de la carta de transparencia.
 
 ## Secciones
 - **Partituras** (`index.html`): menú con búsqueda, filtros (Autor, Tipo, Parte, Tiempo) y orden A→Z / Z→A. Cada partitura tiene su página `partitura.html?id=...` con vista del PDF, descarga, original, YouTube, fuente y condición.

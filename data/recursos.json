@@ -8,5 +8,75 @@
     "drive": "https://drive.google.com/file/d/15rs70lz8rgYdrpJPWJ8WPKBj3MyFSDjt/view?usp=sharing",
     "fuente": "",
     "editorial": "Ediciones Paulinas"
+  },
+  {
+    "id": "misal-romano-tiempo-de-adviento",
+    "categoria": "Documentos",
+    "titulo": "Misal Romano Tiempo de Adviento",
+    "autor": "Magisterio",
+    "descripcion": "Misal Romano en Tiempo de Adviento",
+    "drive": "https://drive.google.com/file/d/1C9GkPfWKrZALl8NGAza8zdVCSDyR3SoY/view?usp=sharing",
+    "fuente": "https://liturgiapapal.org/index.php/recursos-litúrgicos/libros-litúrgicos.html",
+    "editorial": "Liturgia Papal"
+  },
+  {
+    "id": "catesismo-de-la-iglesia-catolica",
+    "categoria": "Documentos",
+    "titulo": "Catesismo de la Iglesia Catolica",
+    "autor": "Magisterio",
+    "descripcion": "Catesismo de La Iglesia Catolica",
+    "drive": "https://drive.google.com/file/d/17W6dBrHHq15ddWp12VlcbohPy8dowUiQ/view?usp=sharing",
+    "fuente": "",
+    "editorial": "Libreria Editrice Vaticana"
+  },
+  {
+    "id": "catesismo-mayor-de-san-pio-x",
+    "categoria": "Documentos",
+    "titulo": "Catesismo Mayor de San Pio X",
+    "autor": "Magisterio",
+    "descripcion": "",
+    "drive": "https://drive.google.com/file/d/1VZTUZ2VTc5xASprgm_RmFke9DViFwFeQ/view?usp=sharing",
+    "fuente": "",
+    "editorial": ""
+  },
+  {
+    "id": "celebrar-la-eucaristia",
+    "categoria": "Documentos",
+    "titulo": "Celebrar la Eucaristia",
+    "autor": "CELAM",
+    "descripcion": "Un Documento de como podemos vivir mejor la Celebracion Eucaristica",
+    "drive": "https://drive.google.com/file/d/1dkNwLQiNyFK35r_YRgf_ZACMDCuLo3Dw/view?usp=sharing",
+    "fuente": "",
+    "editorial": ""
+  },
+  {
+    "id": "constitucion-sacrosantum-concilium",
+    "categoria": "Documentos",
+    "titulo": "Constitución Sacrosantum Concilium",
+    "autor": "Magisterio",
+    "descripcion": "Documento del Concilio Vaticano II Sobre la Sagrada Liturgia",
+    "drive": "https://drive.google.com/file/d/1C1krk-HpYrNMAHPWnD9Px5Ygi8VGMlx_/view?usp=sharing",
+    "fuente": "https://liturgiapapal.org/index.php/recursos-litúrgicos/libros-litúrgicos.html",
+    "editorial": "Liturgia Papal"
+  },
+  {
+    "id": "misal-romano-tiempo-de-cuaresma",
+    "categoria": "Documentos",
+    "titulo": "Misal Romano Tiempo de Cuaresma",
+    "autor": "Magisterio",
+    "descripcion": "Misal Romano en Tiempo de Cuaresma",
+    "drive": "https://drive.google.com/file/d/1TntTH_HiVr_I5Tc0a673kdHasrfTu_ng/view?usp=sharing",
+    "fuente": "https://liturgiapapal.org/index.php/recursos-litúrgicos/libros-litúrgicos.html",
+    "editorial": "Liturgia Papal"
+  },
+  {
+    "id": "el-espiritu-de-la-liturgia",
+    "categoria": "Documentos",
+    "titulo": "El Espiritu de la liturgia",
+    "autor": "Joseph Ratzinger",
+    "descripcion": "",
+    "drive": "https://drive.google.com/file/d/1xTwgg_pfpkJCaoc0pvZEFk_u0OQEEIl_/view?usp=sharing",
+    "fuente": "",
+    "editorial": ""
   }
 ]
